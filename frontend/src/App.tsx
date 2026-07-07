@@ -9,8 +9,8 @@ function App() {
       <header className="dark sticky top-0 z-40 bg-brand-navy/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-2.5">
-            {/* Swap this file with the official vector to update the mark, no code change. */}
-            <img src="/pitz-logo.svg" alt="Pitz" className="h-5 w-auto" />
+            {/* Official Pitz mark; swap public/logo.png to update it, no code change. */}
+            <img src="/logo.png" alt="Pitz" className="h-9 w-auto" />
             <span className="h-3.5 w-px bg-white/25" />
             <span className="font-mono text-[11px] tracking-[0.14em] text-white/55 uppercase">
               Products
