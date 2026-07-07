@@ -22,10 +22,14 @@ function readParams(): ListParams {
 }
 
 function writeParams(params: ListParams) {
-  const search = new URLSearchParams()
+  // Start from the live query string so unrelated params are preserved; only manage our keys.
+  const search = new URLSearchParams(window.location.search)
   if (params.page > 1) search.set('page', String(params.page))
+  else search.delete('page')
   if (params.search.trim()) search.set('search', params.search.trim())
+  else search.delete('search')
   if (params.active !== 'all') search.set('active', params.active)
+  else search.delete('active')
 
   const query = search.toString()
   // replaceState (not push) so typing doesn't spam browser history.
@@ -35,7 +39,7 @@ function writeParams(params: ListParams) {
 /**
  * Keeps the product list state (page / search / status) in the URL query string,
  * so a refresh restores it and the view is shareable. Changing the search or filter
- * resets to page 1.
+ * resets to page 1, and browser back/forward re-hydrates the state from the URL.
  */
 export function useUrlListParams() {
   const [params, setParams] = useState<ListParams>(readParams)
@@ -43,6 +47,12 @@ export function useUrlListParams() {
   useEffect(() => {
     writeParams(params)
   }, [params])
+
+  useEffect(() => {
+    const onPopState = () => setParams(readParams())
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [])
 
   const setPage = useCallback((page: number) => setParams((prev) => ({ ...prev, page })), [])
   const setSearch = useCallback((search: string) => setParams((prev) => ({ ...prev, search, page: 1 })), [])

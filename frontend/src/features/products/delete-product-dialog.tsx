@@ -1,5 +1,4 @@
 import type { MouseEvent } from 'react'
-import { Loader2 } from 'lucide-react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,8 +23,8 @@ export function DeleteProductDialog({ product, onOpenChange }: Props) {
   const handleConfirm = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     if (!product) return
-    // Optimistic: fire the delete and close immediately — the row is already gone.
-    // A failure rolls it back and shows an error toast (see useDeleteProduct).
+    // Optimistic: fire the delete and close immediately — the row is already gone;
+    // a failure rolls it back and shows an error toast (see useDeleteProduct).
     deleteProduct.mutate(product)
     onOpenChange(false)
   }
@@ -36,18 +35,15 @@ export function DeleteProductDialog({ product, onOpenChange }: Props) {
         <AlertDialogHeader>
           <AlertDialogTitle>Delete product?</AlertDialogTitle>
           <AlertDialogDescription>
-            This permanently deletes {product ? `"${product.name}"` : 'this product'}. This action
-            cannot be undone.
+            This removes {product ? `"${product.name}"` : 'this product'} from the catalog.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={deleteProduct.isPending}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
-            disabled={deleteProduct.isPending}
             className="bg-destructive text-white hover:bg-destructive/90"
           >
-            {deleteProduct.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>

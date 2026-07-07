@@ -29,6 +29,8 @@ export function ProductsPage() {
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Product | null>(null)
   const [deleting, setDeleting] = useState<Product | null>(null)
+  // Once opened, keep the (lazy) form dialog mounted so its close animation can play.
+  const [formMounted, setFormMounted] = useState(false)
 
   const { data, isPending, isError, error, refetch, isFetching } = useProducts({
     page,
@@ -39,11 +41,13 @@ export function ProductsPage() {
 
   const openCreate = () => {
     setEditing(null)
+    setFormMounted(true)
     setFormOpen(true)
   }
 
   const openEdit = (product: Product) => {
     setEditing(product)
+    setFormMounted(true)
     setFormOpen(true)
   }
 
@@ -75,7 +79,7 @@ export function ProductsPage() {
       )}
 
       <Suspense fallback={null}>
-        {formOpen && <ProductFormDialog open={formOpen} onOpenChange={setFormOpen} product={editing} />}
+        {formMounted && <ProductFormDialog open={formOpen} onOpenChange={setFormOpen} product={editing} />}
         {deleting && (
           <DeleteProductDialog
             product={deleting}
