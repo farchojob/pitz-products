@@ -13,13 +13,16 @@
       "name": "Backend: Rails server (debug)",
       "request": "launch",
       "cwd": "${workspaceFolder}/backend",
-      "command": "bin/rails",
-      "script": "server",
-      "args": ["-p", "3000"],
+      // ruby@3.3 is keg-only. bin/rails' `#!/usr/bin/env ruby` shebang would resolve to
+      // the system Ruby 2.6 under VS Code's PATH and fail to load the 3.3-compiled debug gem
+      // ("incompatible library version"). So launch the debuggee with the absolute ruby@3.3
+      // and pass bin/rails as the script — this pins the debuggee to 3.3 regardless of PATH.
+      "command": "/opt/homebrew/opt/ruby@3.3/bin/ruby",
+      "script": "bin/rails",
+      "args": ["server", "-p", "3000"],
       "askParameters": false,
       "useBundler": false,
-      // Homebrew ruby@3.3 is keg-only, so point the extension at its rdbg and put
-      // ruby@3.3 + the gem bin + libpq first on PATH (otherwise the system Ruby 2.6 is used).
+      // rdbg itself also runs under ruby@3.3 (this binstub has an absolute 3.3 shebang).
       "rdbgPath": "/opt/homebrew/opt/ruby@3.3/bin/rdbg",
       "env": {
         "PATH": "/opt/homebrew/opt/ruby@3.3/bin:/opt/homebrew/lib/ruby/gems/3.3.0/bin:/opt/homebrew/opt/postgresql@16/bin:${env:PATH}"
