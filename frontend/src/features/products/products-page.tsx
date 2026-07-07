@@ -11,12 +11,14 @@ import { ProductTable } from './product-table'
 import { ProductToolbar } from './product-toolbar'
 
 const PER_PAGE = 10
+// Wait for a deliberate pause in typing before querying, so a request doesn't fire mid-word.
+const SEARCH_DEBOUNCE_MS = 400
 
 export function ProductsPage() {
   const [page, setPage] = useState(1)
   const [searchInput, setSearchInput] = useState('')
   const [active, setActive] = useState<StateFilter>('all')
-  const debouncedSearch = useDebouncedValue(searchInput, 300)
+  const debouncedSearch = useDebouncedValue(searchInput, SEARCH_DEBOUNCE_MS)
 
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Product | null>(null)

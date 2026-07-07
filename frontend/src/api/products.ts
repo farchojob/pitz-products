@@ -15,7 +15,10 @@ export interface ProductPayload {
   active: boolean
 }
 
-export async function listProducts(params: ProductListParams): Promise<ProductListResponse> {
+export async function listProducts(
+  params: ProductListParams,
+  signal?: AbortSignal,
+): Promise<ProductListResponse> {
   const query: Record<string, string | number> = {
     page: params.page,
     per_page: params.perPage,
@@ -23,7 +26,8 @@ export async function listProducts(params: ProductListParams): Promise<ProductLi
   if (params.search.trim()) query.search = params.search.trim()
   if (params.active !== 'all') query.active = params.active
 
-  const { data } = await apiClient.get<ProductListResponse>('/products', { params: query })
+  // signal comes from TanStack Query — a superseded/cancelled query aborts its request.
+  const { data } = await apiClient.get<ProductListResponse>('/products', { params: query, signal })
   return data
 }
 
