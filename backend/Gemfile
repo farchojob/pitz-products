@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "3.3.11"
+ruby "~> 3.3"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.1.6"
@@ -26,6 +26,17 @@ gem "kaminari", "~> 1.2"
 # JSON serialization — keeps controllers thin and the response contract in one place
 gem "blueprinter", "~> 1.1"
 
+# Soft deletes (discard) and change auditing (who/what/when)
+gem "discard", "~> 1.4"
+gem "audited", "~> 5.4"
+
+# Throttle abusive clients on the public, unauthenticated API
+gem "rack-attack", "~> 6.7"
+
+# Interactive OpenAPI/Swagger docs generated from the request specs
+gem "rswag-api", "~> 2.13"
+gem "rswag-ui", "~> 2.13"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
@@ -41,4 +52,9 @@ end
 
 group :test do
   gem "shoulda-matchers", "~> 6.0"
+  gem "rswag-specs", "~> 2.13"
+end
+
+group :development do
+  gem "rubocop-rails-omakase", require: false
 end
