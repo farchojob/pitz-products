@@ -7,7 +7,11 @@ A full-stack **product management (CRUD)** application built for the PITZ techni
 > **🔗 Live demo:** **[pitz-products-web.onrender.com](https://pitz-products-web.onrender.com)** — API health at [`/up`](https://pitz-products-api.onrender.com/up) · Swagger docs at [`/api-docs`](https://pitz-products-api.onrender.com/api-docs).
 > _Hosted on Render's free tier, so the first request after a period of inactivity can take ~30s to wake the service._
 
-![Product list](docs/screenshots/product-list.jpeg)
+![Pitz Products — table view, dark](docs/screenshots/product-list.png)
+
+> Table ⇄ card-grid views, light + dark themes on the Pitz brand palette (red on navy). Design rationale + tokens: **[design system handoff](docs/DESIGN.md)**.
+
+![Pitz Products — card-grid view, dark](docs/screenshots/product-grid.png)
 
 ---
 
@@ -160,13 +164,14 @@ Base path: `/api/v1`. Envelope: successful reads/writes return `{ "data": ... }`
 
 ## Bonus features implemented
 
-- ✅ **React Query** for server state · ✅ **Frontend tests** (39, Vitest + RTL + MSW) · ✅ **Env-driven config**
+- ✅ **React Query** for server state · ✅ **Frontend tests** (41, Vitest + RTL + MSW) · ✅ **Env-driven config**
 - ✅ **CI** — GitHub Actions runs RuboCop + RSpec and TypeScript + lint + Vitest + build on every push
 - ✅ **Render deploy** (`render.yaml` Blueprint: Postgres + API + static site) · ✅ **Docker** (`docker compose up`)
 - ✅ **OpenAPI/Swagger** docs at `/api-docs` (rswag, generated from the request specs)
 - ✅ **Soft deletes** (`discard`) + **change auditing** (`audited`) + **rate limiting** (`rack-attack`)
 - ✅ **Optimistic delete** with rollback · ✅ **URL-synced filters** (shareable, survives refresh)
 - ✅ **VS Code full-stack debugger** (`.vscode/` — Rails `rdbg` + Chrome, one launcher)
+- ✅ **Pitz-branded design system** — red-on-navy, light + dark themes ([handoff](docs/DESIGN.md)) · ✅ **Table ⇄ card-grid views** (remembered per user)
 
 ## Deploy (Render)
 
