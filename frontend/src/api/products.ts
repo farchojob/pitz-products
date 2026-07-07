@@ -1,5 +1,6 @@
 import { apiClient } from '@/lib/api-client'
 import type {
+  CatalogStats,
   Product,
   ProductListParams,
   ProductListResponse,
@@ -13,6 +14,7 @@ export interface ProductPayload {
   stock: number
   sku: string
   active: boolean
+  image_url: string | null
 }
 
 export async function listProducts(
@@ -48,4 +50,21 @@ export async function updateProduct(id: number, payload: ProductPayload): Promis
 
 export async function deleteProduct(id: number): Promise<void> {
   await apiClient.delete(`/products/${id}`)
+}
+
+export async function getProductStats(signal?: AbortSignal): Promise<CatalogStats> {
+  const { data } = await apiClient.get<{ data: CatalogStats }>('/products/stats', { signal })
+  return data.data
+}
+
+/** Uploads an image to the API's local folder and returns its served path. */
+export async function uploadProductImage(file: File, signal?: AbortSignal): Promise<string> {
+  const form = new FormData()
+  form.append('file', file)
+  // FormData → axios sets multipart/form-data with the correct boundary itself.
+  const { data } = await apiClient.post<{ data: { url: string } }>('/uploads', form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    signal,
+  })
+  return data.data.url
 }

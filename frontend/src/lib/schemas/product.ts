@@ -37,6 +37,8 @@ export const productFormSchema = z.object({
     .toUpperCase()
     .regex(SKU_REGEX, 'SKU allows uppercase letters, numbers and hyphens only'),
   active: z.boolean(),
+  // Set by the image upload field (an /uploads path); null means no image.
+  image_url: z.string().max(512).nullable().optional(),
 })
 
 /** Output (post-coercion): price/stock are numbers. Used for submit handling. */

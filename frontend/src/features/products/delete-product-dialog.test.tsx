@@ -17,6 +17,7 @@ const product: Product = {
   stock: 1,
   sku: 'DEL-1',
   active: true,
+  image_url: null,
   created_at: '2026-07-06T00:00:00.000Z',
   updated_at: '2026-07-06T00:00:00.000Z',
 }

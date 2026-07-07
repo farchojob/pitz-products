@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { formatPrice } from '@/lib/format'
 import type { Product } from '@/types/product'
+import { ProductThumb } from './product-thumb'
 import { StatusBadge } from './status-badge'
 
 interface Props {
@@ -18,8 +19,14 @@ export function ProductCardList({ products, onEdit, onDelete }: Props) {
       {products.map((product) => (
         <li key={product.id}>
           <Card className="transition-colors hover:border-border">
-            <CardContent className="flex items-start justify-between gap-3 p-4">
-              <div className="min-w-0 space-y-1.5">
+            <CardContent className="flex items-start gap-3 p-4">
+              <ProductThumb
+                src={product.image_url}
+                alt={product.name}
+                className="h-14 w-14 shrink-0 rounded-lg border border-border/60"
+                iconClassName="h-6 w-6"
+              />
+              <div className="min-w-0 flex-1 space-y-1.5">
                 <p className="truncate font-medium">{product.name}</p>
                 <span className="inline-block rounded-md bg-muted px-1.5 py-0.5 font-mono text-xs text-muted-foreground">
                   {product.sku}

@@ -1,8 +1,9 @@
-import { Package, Pencil, Trash2 } from 'lucide-react'
+import { Pencil, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { formatPrice } from '@/lib/format'
 import type { Product } from '@/types/product'
+import { ProductThumb } from './product-thumb'
 import { StatusBadge } from './status-badge'
 
 interface Props {
@@ -17,9 +18,14 @@ export function ProductGrid({ products, onEdit, onDelete }: Props) {
       {products.map((product) => (
         <li key={product.id}>
           <div className="group flex h-full flex-col overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md">
-            {/* Media band — the schema has no images, so a branded tile stands in. */}
-            <div className="relative flex h-20 items-center justify-center border-b border-border/60 bg-gradient-to-br from-muted to-muted/30">
-              <Package className="h-7 w-7 text-muted-foreground/35" />
+            {/* Product image with a no-media fallback rendered inside the band. */}
+            <div className="relative h-32 border-b border-border/60">
+              <ProductThumb
+                src={product.image_url}
+                alt={product.name}
+                className="h-full w-full"
+                iconClassName="h-8 w-8"
+              />
               <div className="absolute top-2 right-2">
                 <StatusBadge active={product.active} />
               </div>

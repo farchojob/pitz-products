@@ -10,6 +10,13 @@ import { server } from '@/test/server'
 
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
 
+// Only the multipart upload transport is mocked (axios+FormData+MSW hangs under
+// jsdom — it's exercised for real in the browser). Every other API call stays live.
+vi.mock('@/api/products', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/api/products')>()),
+  uploadProductImage: vi.fn().mockResolvedValue('/uploads/mock-image.jpg'),
+}))
+
 const BASE = 'http://localhost:3000/api/v1'
 const table = () => screen.getByRole('table')
 
@@ -311,6 +318,56 @@ describe('ProductsPage — view toggle', () => {
     } finally {
       vi.unstubAllGlobals()
     }
+  })
+})
+
+describe('ProductsPage — product images', () => {
+  it('renders an <img> when a product has an image, and a fallback when it does not', async () => {
+    seedProducts([
+      { name: 'With Photo', image_url: '/uploads/seed/1.jpg' },
+      { name: 'No Photo', image_url: null },
+    ])
+    renderWithClient(<ProductsPage />)
+    const t = await screen.findByRole('table')
+
+    expect(within(t).getByAltText('With Photo')).toBeInTheDocument()
+    // The no-media fallback is an aria-hidden well — no image with that alt text.
+    expect(within(t).queryByAltText('No Photo')).not.toBeInTheDocument()
+  })
+
+  it('uploads an image and sends image_url when creating', async () => {
+    seedProducts([{ name: 'Existing' }])
+    const user = userEvent.setup()
+    renderWithClient(<ProductsPage />)
+    await screen.findByRole('table')
+
+    await user.click(screen.getByRole('button', { name: /new product/i }))
+    const dialog = await screen.findByRole('dialog', { name: /new product/i })
+
+    const file = new File(['binary'], 'photo.png', { type: 'image/png' })
+    await user.upload(within(dialog).getByLabelText('Product image'), file)
+    // Wait for the upload to resolve — the preview src flips from the FileReader
+    // data URL to the uploaded path, which means image_url is now set.
+    await waitFor(() => {
+      const src = within(dialog).getByAltText('Product preview').getAttribute('src') ?? ''
+      expect(src).toContain('mock-image.jpg')
+    })
+
+    await user.type(within(dialog).getByLabelText('Name'), 'Imaged Widget')
+    await user.type(within(dialog).getByLabelText('SKU'), 'img-1')
+    const price = within(dialog).getByLabelText('Price')
+    await user.clear(price)
+    await user.type(price, '10')
+    const stock = within(dialog).getByLabelText('Stock')
+    await user.clear(stock)
+    await user.type(stock, '2')
+    await user.click(within(dialog).getByRole('button', { name: /create product/i }))
+
+    await waitFor(() => {
+      const post = requestLog.find((r) => r.method === 'POST')
+      const body = post?.body as { product: { image_url?: string | null } } | undefined
+      expect(body?.product.image_url).toBe('/uploads/mock-image.jpg')
+    })
   })
 })
 

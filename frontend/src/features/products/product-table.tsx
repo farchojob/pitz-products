@@ -11,6 +11,7 @@ import {
 import { cn } from '@/lib/utils'
 import { formatDate, formatPrice } from '@/lib/format'
 import type { Product } from '@/types/product'
+import { ProductThumb } from './product-thumb'
 import { StatusBadge } from './status-badge'
 
 interface Props {
@@ -54,7 +55,24 @@ export function ProductTable({ products, onEdit, onDelete }: Props) {
         <TableBody className="[&_td]:px-4 [&_td]:py-3">
           {products.map((product) => (
             <TableRow key={product.id} className="group border-border/60">
-              <TableCell className="font-medium">{product.name}</TableCell>
+              <TableCell>
+                <div className="flex items-center gap-3">
+                  <ProductThumb
+                    src={product.image_url}
+                    alt={product.name}
+                    className="h-11 w-11 shrink-0 rounded-md border border-border/60"
+                    iconClassName="h-5 w-5"
+                  />
+                  <div className="min-w-0">
+                    <p className="truncate font-medium">{product.name}</p>
+                    {product.description && (
+                      <p className="max-w-[280px] truncate text-xs text-muted-foreground">
+                        {product.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </TableCell>
               <TableCell>
                 <span className="rounded-md bg-muted px-1.5 py-0.5 font-mono text-xs text-muted-foreground">
                   {product.sku}

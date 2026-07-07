@@ -84,6 +84,7 @@ describe('ProductFormDialog — edit', () => {
       stock: 3,
       sku: 'EDIT-1',
       active: false,
+      image_url: null,
       created_at: '2026-07-06T00:00:00.000Z',
       updated_at: '2026-07-06T00:00:00.000Z',
     }

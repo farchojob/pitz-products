@@ -2,10 +2,15 @@ import axios from 'axios'
 import type { AxiosError } from 'axios'
 import type { ApiError } from '@/types/product'
 
+const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api/v1'
+
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api/v1',
+  baseURL: BASE_URL,
   headers: { 'Content-Type': 'application/json' },
 })
+
+/** Origin that serves static assets (uploaded images) — the base URL minus the /api/vN suffix. */
+export const API_ORIGIN = BASE_URL.replace(/\/api\/v\d+\/?$/, '')
 
 interface BackendErrorBody {
   error?: {

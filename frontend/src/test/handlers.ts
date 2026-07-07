@@ -19,6 +19,7 @@ export function seedProducts(overrides: Partial<Product>[] = []): Product[] {
     stock: 5,
     sku: `SKU-${String(index + 1).padStart(4, '0')}`,
     active: true,
+    image_url: null,
     created_at: '2026-07-06T00:00:00.000Z',
     updated_at: '2026-07-06T00:00:00.000Z',
     ...item,
@@ -69,10 +70,27 @@ export const handlers = [
     })
   }),
 
+  // Registered before /products/:id so "stats" isn't matched as an id.
+  http.get(`${BASE}/products/stats`, () =>
+    HttpResponse.json({
+      data: {
+        total: db.length,
+        active: db.filter((p) => p.active).length,
+        out: db.filter((p) => p.stock === 0).length,
+        low: db.filter((p) => p.stock >= 1 && p.stock <= 5).length,
+        inventory_value: '0.00',
+      },
+    }),
+  ),
+
   http.get(`${BASE}/products/:id`, ({ params }) => {
     const product = db.find((p) => p.id === Number(params.id))
     return product ? HttpResponse.json({ data: product }) : notFound()
   }),
+
+  http.post(`${BASE}/uploads`, () =>
+    HttpResponse.json({ data: { url: '/uploads/mock-image.jpg' } }, { status: 201 }),
+  ),
 
   http.post(`${BASE}/products`, async ({ request }) => {
     const body = (await request.json()) as { product: Record<string, unknown> }
@@ -100,6 +118,7 @@ export const handlers = [
       stock: Number(p.stock),
       sku,
       active: Boolean(p.active),
+      image_url: (p.image_url as string | null | undefined) ?? null,
       created_at: '2026-07-06T00:00:00.000Z',
       updated_at: '2026-07-06T00:00:00.000Z',
     }
@@ -121,6 +140,7 @@ export const handlers = [
       ...(p.price !== undefined ? { price: String(p.price) } : {}),
       ...(p.stock !== undefined ? { stock: Number(p.stock) } : {}),
       ...(p.active !== undefined ? { active: Boolean(p.active) } : {}),
+      ...(p.image_url !== undefined ? { image_url: (p.image_url as string | null) ?? null } : {}),
       ...(p.description !== undefined ? { description: (p.description as string | undefined) ?? null } : {}),
     }
     db[index] = updated

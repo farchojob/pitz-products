@@ -21,6 +21,7 @@ import type { ProductFormInput, ProductFormValues } from '@/lib/schemas/product'
 import { useCreateProduct, useUpdateProduct } from '@/hooks/use-product-mutations'
 import type { ProductPayload } from '@/api/products'
 import type { Product } from '@/types/product'
+import { ImageUploadField } from './image-upload-field'
 
 const EMPTY_VALUES: ProductFormInput = {
   name: '',
@@ -29,6 +30,7 @@ const EMPTY_VALUES: ProductFormInput = {
   stock: 0,
   sku: '',
   active: true,
+  image_url: null,
 }
 
 const FIELD_NAMES: ReadonlyArray<keyof ProductFormInput> = [
@@ -77,6 +79,7 @@ export function ProductFormDialog({ open, onOpenChange, product }: Props) {
             stock: product.stock,
             sku: product.sku,
             active: product.active,
+            image_url: product.image_url,
           }
         : EMPTY_VALUES,
     )
@@ -90,6 +93,7 @@ export function ProductFormDialog({ open, onOpenChange, product }: Props) {
       stock: values.stock,
       sku: values.sku,
       active: values.active,
+      image_url: values.image_url ?? null,
     }
 
     const mutation = isEditing ? updateProduct : createProduct
@@ -131,6 +135,14 @@ export function ProductFormDialog({ open, onOpenChange, product }: Props) {
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+          <Controller
+            control={control}
+            name="image_url"
+            render={({ field }) => (
+              <ImageUploadField value={field.value ?? null} onChange={field.onChange} />
+            )}
+          />
+
           <div className="grid gap-2">
             <Label htmlFor="name">Name</Label>
             <Input id="name" aria-invalid={Boolean(errors.name)} {...register('name')} />
