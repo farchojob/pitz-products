@@ -11,6 +11,9 @@
     --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
     --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
     --color-brand-navy: var(--brand-navy);
+    --color-thumb-bg: var(--thumb-bg);
+    --color-tick-off: var(--tick-off);
+    --color-input-bg: var(--input-bg);
     --color-success: var(--success);
     --color-success-foreground: var(--success-foreground);
     --color-warning: var(--warning);
@@ -55,11 +58,10 @@
     --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* ── Pitz — light ─────────────────────────────────────────────────────────
-   Pitz brand: automotive red on a deep navy, over clean cool-white surfaces.
-   Ink is navy (not black) to tie type back to the brand. */
+/* ── Pitz "Obsidian v2" — light ───────────────────────────────────────────
+   Pitz red on cool-white surfaces; navy ink; the app bar stays navy. */
 :root {
-    --background: oklch(0.99 0.004 255);
+    --background: oklch(0.985 0.004 255);
     --foreground: oklch(0.24 0.03 258);
     --card: oklch(1 0 0);
     --card-foreground: oklch(0.24 0.03 258);
@@ -70,25 +72,28 @@
     --secondary: oklch(0.965 0.006 255);
     --secondary-foreground: oklch(0.28 0.03 258);
     --muted: oklch(0.965 0.006 255);
-    --muted-foreground: oklch(0.505 0.02 258);
+    --muted-foreground: oklch(0.5 0.02 258);
     --accent: oklch(0.955 0.01 255);
     --accent-foreground: oklch(0.30 0.04 258);
     --destructive: oklch(0.545 0.216 20);
     --success: oklch(0.585 0.14 155);
     --success-foreground: oklch(0.985 0 0);
-    --warning: oklch(0.68 0.15 65);
-    --warning-foreground: oklch(0.24 0.03 65);
-    --border: oklch(0.9 0.006 255);
-    --input: oklch(0.885 0.008 255);
+    --warning: oklch(0.62 0.14 65);
+    --warning-foreground: oklch(0.99 0.01 65);
+    --border: oklch(0.905 0.006 255);
+    --input: oklch(0.89 0.008 255);
+    --input-bg: oklch(0.978 0.004 255);
     --ring: oklch(0.575 0.223 27);
-    --brand-navy: oklch(0.195 0.033 258);
+    --brand-navy: oklch(0.19 0.033 258);
+    --thumb-bg: oklch(0.955 0.008 255);
+    --tick-off: oklch(0 0 0 / 9%);
     --chart-1: oklch(0.575 0.223 27);
     --chart-2: oklch(0.35 0.06 258);
     --chart-3: oklch(0.585 0.14 155);
     --chart-4: oklch(0.68 0.15 65);
     --chart-5: oklch(0.62 0.2 300);
     --radius: 0.7rem;
-    --sidebar: oklch(0.195 0.033 258);
+    --sidebar: oklch(0.19 0.033 258);
     --sidebar-foreground: oklch(0.97 0.005 255);
     --sidebar-primary: oklch(0.575 0.223 27);
     --sidebar-primary-foreground: oklch(0.99 0.01 20);
@@ -98,45 +103,48 @@
     --sidebar-ring: oklch(0.575 0.223 27);
 }
 
-/* ── Pitz — dark ──────────────────────────────────────────────────────────
-   Deep navy-black layered by elevation; hairline borders; the Pitz red
-   brightens on this ground and glows on focus. */
+/* ── Pitz "Obsidian v2" — dark (default) ──────────────────────────────────
+   Deep, faintly-violet-navy blacks layered by elevation; hairline borders;
+   the Pitz red brightens on this ground and glows on focus. */
 .dark {
-    --background: oklch(0.185 0.024 258);
+    --background: oklch(0.17 0.026 260);
     --foreground: oklch(0.972 0.005 255);
-    --card: oklch(0.225 0.026 258);
+    --card: oklch(0.212 0.028 259);
     --card-foreground: oklch(0.972 0.005 255);
-    --popover: oklch(0.24 0.028 258);
+    --popover: oklch(0.235 0.03 259);
     --popover-foreground: oklch(0.972 0.005 255);
     --primary: oklch(0.63 0.225 27);
     --primary-foreground: oklch(0.99 0.01 20);
-    --secondary: oklch(0.275 0.024 258);
+    --secondary: oklch(0.26 0.028 259);
     --secondary-foreground: oklch(0.972 0.005 255);
-    --muted: oklch(0.265 0.022 258);
-    --muted-foreground: oklch(0.705 0.02 255);
-    --accent: oklch(0.31 0.03 258);
+    --muted: oklch(0.25 0.026 259);
+    --muted-foreground: oklch(0.71 0.02 255);
+    --accent: oklch(0.28 0.03 259);
     --accent-foreground: oklch(0.96 0.008 255);
     --destructive: oklch(0.62 0.21 20);
     --success: oklch(0.72 0.16 158);
     --success-foreground: oklch(0.16 0.02 158);
     --warning: oklch(0.79 0.15 72);
     --warning-foreground: oklch(0.2 0.03 72);
-    --border: oklch(1 0 0 / 9%);
+    --border: oklch(1 0 0 / 8%);
     --input: oklch(1 0 0 / 12%);
+    --input-bg: oklch(1 0 0 / 4%);
     --ring: oklch(0.63 0.225 27);
-    --brand-navy: oklch(0.195 0.033 258);
+    --brand-navy: oklch(0.19 0.033 258);
+    --thumb-bg: oklch(0.28 0.03 259);
+    --tick-off: oklch(1 0 0 / 10%);
     --chart-1: oklch(0.63 0.225 27);
     --chart-2: oklch(0.7 0.05 258);
     --chart-3: oklch(0.72 0.16 158);
     --chart-4: oklch(0.79 0.15 72);
     --chart-5: oklch(0.68 0.18 300);
-    --sidebar: oklch(0.195 0.033 258);
+    --sidebar: oklch(0.19 0.033 258);
     --sidebar-foreground: oklch(0.972 0.005 255);
     --sidebar-primary: oklch(0.63 0.225 27);
     --sidebar-primary-foreground: oklch(0.99 0.01 20);
-    --sidebar-accent: oklch(0.31 0.03 258);
+    --sidebar-accent: oklch(0.28 0.03 259);
     --sidebar-accent-foreground: oklch(0.96 0.008 255);
-    --sidebar-border: oklch(1 0 0 / 9%);
+    --sidebar-border: oklch(1 0 0 / 8%);
     --sidebar-ring: oklch(0.63 0.225 27);
 }
 
@@ -150,8 +158,7 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-    /* Faint Pitz-red halo anchored top-center for depth — fixed so it
-       doesn't scroll away, low-opacity so content stays legible. */
+    /* Faint Pitz-red halo anchored top-center for depth, fixed + low-opacity. */
     background-image:
       radial-gradient(52rem 32rem at 50% -13rem, color-mix(in oklch, var(--primary) 13%, transparent), transparent 72%);
     background-attachment: fixed;
@@ -159,5 +166,13 @@
   }
   ::selection {
     background: color-mix(in oklch, var(--primary) 28%, transparent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }

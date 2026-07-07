@@ -40,7 +40,7 @@ function ViewButton({
       aria-pressed={active}
       onClick={onClick}
       className={cn(
-        'inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors',
+        'inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium transition-colors',
         active
           ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/25'
           : 'text-muted-foreground hover:text-foreground',
@@ -63,21 +63,24 @@ export function ProductToolbar({
   return (
     <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
       <div className="relative flex-1">
-        <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Search className="pointer-events-none absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         {isFetching && (
-          <Loader2 className="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+          <Loader2 className="absolute top-1/2 right-4 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
         )}
         <Input
           value={search}
           onChange={(event) => onSearchChange(event.target.value)}
-          placeholder="Search by name…"
-          className="h-10 pl-9"
+          placeholder="Search the catalog…"
+          className="h-11 rounded-full bg-input-bg pl-10"
           aria-label="Search products by name"
         />
       </div>
       <div className="flex items-center gap-2.5">
         <Select value={active} onValueChange={(value) => onActiveChange(value as StateFilter)}>
-          <SelectTrigger className="h-10 flex-1 sm:w-44 sm:flex-none" aria-label="Filter by status">
+          <SelectTrigger
+            className="h-11 flex-1 rounded-full bg-input-bg sm:w-44 sm:flex-none"
+            aria-label="Filter by status"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -86,20 +89,14 @@ export function ProductToolbar({
             <SelectItem value="false">Inactive</SelectItem>
           </SelectContent>
         </Select>
-        <div className="inline-flex h-10 items-center rounded-lg border border-input bg-card p-1">
-          <ViewButton
-            active={view === 'table'}
-            label="Table view"
-            onClick={() => onViewChange('table')}
-          >
-            <Rows3 className="h-4 w-4" />
+        <div className="inline-flex h-11 items-center gap-1 rounded-full border border-input bg-card p-1">
+          <ViewButton active={view === 'grid'} label="Grid view" onClick={() => onViewChange('grid')}>
+            <LayoutGrid className="h-[15px] w-[15px]" />
+            <span className="hidden min-[560px]:inline">Grid</span>
           </ViewButton>
-          <ViewButton
-            active={view === 'grid'}
-            label="Grid view"
-            onClick={() => onViewChange('grid')}
-          >
-            <LayoutGrid className="h-4 w-4" />
+          <ViewButton active={view === 'table'} label="Table view" onClick={() => onViewChange('table')}>
+            <Rows3 className="h-[15px] w-[15px]" />
+            <span className="hidden min-[560px]:inline">Table</span>
           </ViewButton>
         </div>
       </div>

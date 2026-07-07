@@ -14,25 +14,27 @@ export function ProductPagination({
 
   return (
     <div className="flex items-center justify-between gap-4">
-      <p className="text-sm text-muted-foreground tabular-nums">
+      <p className="font-mono text-xs tracking-wide text-muted-foreground tabular-nums">
         {from}&ndash;{to} of {meta.total}
       </p>
       <div className="flex items-center gap-2">
         <Button
           variant="outline"
           size="sm"
+          className="rounded-full"
           disabled={meta.prev === null}
           onClick={() => meta.prev !== null && onPageChange(meta.prev)}
         >
           <ChevronLeft className="h-4 w-4" />
           <span className="hidden sm:inline">Prev</span>
         </Button>
-        <span className="px-1 text-sm text-muted-foreground tabular-nums">
-          Page {meta.page} of {Math.max(meta.pages, 1)}
+        <span className="px-1 font-mono text-xs text-muted-foreground tabular-nums">
+          {meta.page} / {Math.max(meta.pages, 1)}
         </span>
         <Button
           variant="outline"
           size="sm"
+          className="rounded-full"
           disabled={meta.next === null}
           onClick={() => meta.next !== null && onPageChange(meta.next)}
         >

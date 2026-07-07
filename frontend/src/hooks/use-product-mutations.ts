@@ -14,6 +14,7 @@ export function useCreateProduct() {
     mutationFn: createProduct,
     onSuccess: (product) => {
       queryClient.invalidateQueries({ queryKey: productKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: productKeys.stats() })
       toast.success(`Created "${product.name}"`)
     },
   })
@@ -26,6 +27,7 @@ export function useUpdateProduct(id: number) {
     onSuccess: (product) => {
       queryClient.invalidateQueries({ queryKey: productKeys.lists() })
       queryClient.invalidateQueries({ queryKey: productKeys.detail(id) })
+      queryClient.invalidateQueries({ queryKey: productKeys.stats() })
       toast.success(`Updated "${product.name}"`)
     },
   })
@@ -60,6 +62,7 @@ export function useDeleteProduct() {
     // Re-sync with the server regardless of outcome.
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: productKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: productKeys.stats() })
     },
   })
 }

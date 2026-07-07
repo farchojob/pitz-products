@@ -371,6 +371,34 @@ describe('ProductsPage — product images', () => {
   })
 })
 
+describe('ProductsPage — quick view & metrics', () => {
+  it('opens the quick view when a row is clicked, with Edit and Delete', async () => {
+    seedProducts([{ name: 'Alpha Widget' }])
+    const user = userEvent.setup()
+    renderWithClient(<ProductsPage />)
+    const t = await screen.findByRole('table')
+
+    await user.click(within(t).getByText('Alpha Widget'))
+    const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).getByText('Alpha Widget')).toBeInTheDocument()
+    expect(within(dialog).getByRole('button', { name: /edit product/i })).toBeInTheDocument()
+    expect(within(dialog).getByRole('button', { name: /^delete$/i })).toBeInTheDocument()
+  })
+
+  it('renders the catalog metrics strip', async () => {
+    seedProducts([
+      { name: 'Active One', active: true, stock: 100 },
+      { name: 'Out One', active: false, stock: 0 },
+    ])
+    renderWithClient(<ProductsPage />)
+    await screen.findByRole('table')
+
+    await waitFor(() => expect(screen.getByText('Total SKUs')).toBeInTheDocument())
+    expect(screen.getByText('Stock alerts')).toBeInTheDocument()
+    expect(screen.getByText('Inventory value')).toBeInTheDocument()
+  })
+})
+
 describe('ProductsPage — URL state', () => {
   it('reflects the search term in the URL', async () => {
     seedProducts([{ name: 'Alpha Widget' }])

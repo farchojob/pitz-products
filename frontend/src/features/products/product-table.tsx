@@ -1,3 +1,4 @@
+import type { MouseEvent } from 'react'
 import { Pencil, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -8,53 +9,47 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { cn } from '@/lib/utils'
-import { formatDate, formatPrice } from '@/lib/format'
+import { formatPrice } from '@/lib/format'
 import type { Product } from '@/types/product'
 import { ProductThumb } from './product-thumb'
 import { StatusBadge } from './status-badge'
+import { StockMeter } from './stock-meter'
 
 interface Props {
   products: Product[]
+  onView: (product: Product) => void
   onEdit: (product: Product) => void
   onDelete: (product: Product) => void
 }
 
-// Colour stock by health so a depleted catalog jumps out: red at zero, amber when low.
-function StockCell({ stock }: { stock: number }) {
-  const tone = stock === 0 ? 'text-destructive' : stock <= 5 ? 'text-warning' : 'text-foreground'
-  return (
-    <span className={cn('inline-flex items-center gap-1.5 tabular-nums', tone)}>
-      {stock}
-      {stock === 0 && (
-        <span className="text-[10px] font-medium uppercase tracking-wide opacity-80">out</span>
-      )}
-      {stock > 0 && stock <= 5 && (
-        <span className="text-[10px] font-medium uppercase tracking-wide opacity-80">low</span>
-      )}
-    </span>
-  )
+// Keep a row's action from also triggering the row's quick-view click.
+function stop(event: MouseEvent, run: () => void) {
+  event.stopPropagation()
+  run()
 }
 
-export function ProductTable({ products, onEdit, onDelete }: Props) {
+export function ProductTable({ products, onView, onEdit, onDelete }: Props) {
   return (
-    <div className="hidden overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm md:block">
-      <Table>
+    <div className="hidden overflow-x-auto rounded-xl border border-border/70 bg-card shadow-sm md:block">
+      <Table className="min-w-[820px]">
         <caption className="sr-only">Products</caption>
-        <TableHeader className="[&_th]:h-11 [&_th]:px-4 [&_th]:text-[11px] [&_th]:font-medium [&_th]:tracking-wider [&_th]:text-muted-foreground [&_th]:uppercase">
-          <TableRow className="border-border/70 bg-muted/40 hover:bg-muted/40">
-            <TableHead>Name</TableHead>
+        <TableHeader className="[&_th]:h-11 [&_th]:px-4 [&_th]:font-mono [&_th]:text-[10px] [&_th]:font-medium [&_th]:tracking-[0.14em] [&_th]:text-muted-foreground [&_th]:uppercase">
+          <TableRow className="border-border/70 bg-muted/45 hover:bg-muted/45">
+            <TableHead>Product</TableHead>
             <TableHead>SKU</TableHead>
             <TableHead className="text-right">Price</TableHead>
-            <TableHead className="text-right">Stock</TableHead>
+            <TableHead>Stock</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Updated</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody className="[&_td]:px-4 [&_td]:py-3">
+        <TableBody className="[&_td]:px-4 [&_td]:py-2.5">
           {products.map((product) => (
-            <TableRow key={product.id} className="group border-border/60">
+            <TableRow
+              key={product.id}
+              className="group cursor-pointer border-border/60"
+              onClick={() => onView(product)}
+            >
               <TableCell>
                 <div className="flex items-center gap-3">
                   <ProductThumb
@@ -74,21 +69,16 @@ export function ProductTable({ products, onEdit, onDelete }: Props) {
                 </div>
               </TableCell>
               <TableCell>
-                <span className="rounded-md bg-muted px-1.5 py-0.5 font-mono text-xs text-muted-foreground">
-                  {product.sku}
-                </span>
+                <span className="font-mono text-xs text-muted-foreground">{product.sku}</span>
               </TableCell>
               <TableCell className="text-right font-medium tabular-nums">
                 {formatPrice(product.price)}
               </TableCell>
-              <TableCell className="text-right">
-                <StockCell stock={product.stock} />
+              <TableCell>
+                <StockMeter stock={product.stock} />
               </TableCell>
               <TableCell>
                 <StatusBadge active={product.active} />
-              </TableCell>
-              <TableCell className="text-sm text-muted-foreground">
-                {formatDate(product.updated_at)}
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end gap-1 opacity-70 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
@@ -96,7 +86,7 @@ export function ProductTable({ products, onEdit, onDelete }: Props) {
                     variant="ghost"
                     size="icon"
                     aria-label={`Edit ${product.name}`}
-                    onClick={() => onEdit(product)}
+                    onClick={(event) => stop(event, () => onEdit(product))}
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
@@ -104,7 +94,7 @@ export function ProductTable({ products, onEdit, onDelete }: Props) {
                     variant="ghost"
                     size="icon"
                     aria-label={`Delete ${product.name}`}
-                    onClick={() => onDelete(product)}
+                    onClick={(event) => stop(event, () => onDelete(product))}
                     className="hover:bg-destructive/10"
                   >
                     <Trash2 className="h-4 w-4 text-destructive" />

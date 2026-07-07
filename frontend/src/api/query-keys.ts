@@ -8,4 +8,5 @@ export const productKeys = {
   list: (params: ProductListParams) => [...productKeys.lists(), params] as const,
   details: () => [...productKeys.all, 'detail'] as const,
   detail: (id: number) => [...productKeys.details(), id] as const,
+  stats: () => [...productKeys.all, 'stats'] as const,
 }
