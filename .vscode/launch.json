@@ -1,0 +1,47 @@
+{
+  // Full-stack debugging for the PITZ monorepo.
+  // Open the pitz-products/ folder as the VS Code workspace root.
+  //
+  //   - "Full Stack: Debug" (compound) launches the backend AND frontend together.
+  //   - Backend uses the Ruby "rdbg" debugger (install the recommended vscode-rdbg extension).
+  //   - Frontend uses VS Code's built-in JS debugger, attaching Chrome to the Vite dev server
+  //     (the Vite server is started automatically by the "vite: dev" task).
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "rdbg",
+      "name": "Backend: Rails server (debug)",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/backend",
+      "command": "bin/rails",
+      "script": "server",
+      "args": ["-p", "3000"],
+      "askParameters": false,
+      "useBundler": false,
+      // Homebrew ruby@3.3 is keg-only, so point the extension at its rdbg and put
+      // ruby@3.3 + the gem bin + libpq first on PATH (otherwise the system Ruby 2.6 is used).
+      "rdbgPath": "/opt/homebrew/opt/ruby@3.3/bin/rdbg",
+      "env": {
+        "PATH": "/opt/homebrew/opt/ruby@3.3/bin:/opt/homebrew/lib/ruby/gems/3.3.0/bin:/opt/homebrew/opt/postgresql@16/bin:${env:PATH}"
+      }
+    },
+    {
+      "type": "chrome",
+      "name": "Frontend: Chrome (debug)",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/frontend",
+      "sourceMaps": true,
+      // Start the Vite dev server first and wait until it prints "Local: http://...".
+      "preLaunchTask": "vite: dev"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack: Debug",
+      "configurations": ["Backend: Rails server (debug)", "Frontend: Chrome (debug)"],
+      "stopAll": true,
+      "presentation": { "group": "0-fullstack", "order": 1 }
+    }
+  ]
+}

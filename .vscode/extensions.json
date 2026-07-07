@@ -1,0 +1,10 @@
+{
+  // Recommended extensions for developing/debugging this project.
+  // VS Code will prompt to install these when the workspace is opened.
+  "recommendations": [
+    "KoichiSasada.vscode-rdbg",     // Ruby rdbg debugger (required for backend debugging)
+    "Shopify.ruby-lsp",             // Ruby language features (LSP, formatting)
+    "bradlc.vscode-tailwindcss",    // Tailwind CSS IntelliSense
+    "oxc.oxc-vscode"                // oxlint (the linter this project uses)
+  ]
+}

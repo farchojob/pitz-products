@@ -1,0 +1,17 @@
+{
+  // Homebrew ruby@3.3 is keg-only (not on the default PATH), so tell the Ruby LSP
+  // how to load it. Without this the LSP tries the system Ruby 2.6 and fails to boot.
+  "rubyLsp.rubyVersionManager": { "identifier": "custom" },
+  "rubyLsp.customRubyCommand": "export PATH=\"/opt/homebrew/opt/ruby@3.3/bin:/opt/homebrew/lib/ruby/gems/3.3.0/bin:$PATH\"",
+
+  // Keep the search/file tree tidy.
+  "files.exclude": {
+    "**/.DS_Store": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "backend/tmp": true,
+    "backend/log": true
+  }
+}
