@@ -81,7 +81,7 @@ RSpec.describe "Api::V1::Products", type: :request do
       end
 
       it "is injection-safe against LIKE wildcards and SQL payloads" do
-        ["%", "_", "' OR 1=1", "'; DROP TABLE products; --"].each do |payload|
+        [ "%", "_", "' OR 1=1", "'; DROP TABLE products; --" ].each do |payload|
           get "/api/v1/products", params: { search: payload }
           expect(response).to have_http_status(:ok)
         end
@@ -160,7 +160,7 @@ RSpec.describe "Api::V1::Products", type: :request do
       post "/api/v1/products", params: {}, as: :json
       expect(response).to have_http_status(:unprocessable_content)
       expect(json["error"]["code"]).to eq("parameter_missing")
-      expect(json["error"]["details"]).to eq("product" => ["is required"])
+      expect(json["error"]["details"]).to eq("product" => [ "is required" ])
     end
 
     it "returns a 422 validation envelope with per-field details" do
@@ -181,14 +181,14 @@ RSpec.describe "Api::V1::Products", type: :request do
       create(:product, sku: "DUP-1")
       post "/api/v1/products", params: { product: valid.merge(sku: "dup-1") }, as: :json
       expect(response).to have_http_status(:unprocessable_content)
-      expect(json["error"]["details"]).to eq("sku" => ["has already been taken"])
+      expect(json["error"]["details"]).to eq("sku" => [ "has already been taken" ])
     end
 
     it "surfaces a DB-level unique race as a clean 422 (not a 500)" do
       allow(Product).to receive(:create!).and_raise(ActiveRecord::RecordNotUnique.new("duplicate key"))
       post "/api/v1/products", params: { product: valid.merge(sku: "RACE-1") }, as: :json
       expect(response).to have_http_status(:unprocessable_content)
-      expect(json["error"]["details"]).to eq("sku" => ["has already been taken"])
+      expect(json["error"]["details"]).to eq("sku" => [ "has already been taken" ])
     end
 
     it "ignores server-controlled and unknown attributes (mass assignment)" do

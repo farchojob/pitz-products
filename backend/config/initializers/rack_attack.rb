@@ -19,6 +19,6 @@ class Rack::Attack
       }
     }.to_json
 
-    [429, { "Content-Type" => "application/json", "Retry-After" => match[:period].to_s }, [body]]
+    [ 429, { "Content-Type" => "application/json", "Retry-After" => match[:period].to_s }, [ body ] ]
   end
 end

@@ -65,7 +65,7 @@ module Api
         @per_page ||= begin
           requested = params[:per_page].to_i
           requested = 10 if requested <= 0
-          [requested, 100].min
+          [ requested, 100 ].min
         end
       end
 

@@ -43,7 +43,7 @@ class ApplicationController < ActionController::API
       status: :unprocessable_content,
       code: "validation_error",
       message: "Validation failed",
-      details: { sku: ["has already been taken"] }
+      details: { sku: [ "has already been taken" ] }
     )
   end
 
@@ -54,7 +54,7 @@ class ApplicationController < ActionController::API
       status: :unprocessable_content,
       code: "validation_error",
       message: "Validation failed",
-      details: { base: ["a numeric value is out of the allowed range"] }
+      details: { base: [ "a numeric value is out of the allowed range" ] }
     )
   end
 
@@ -63,7 +63,7 @@ class ApplicationController < ActionController::API
       status: :unprocessable_content,
       code: "parameter_missing",
       message: exception.message,
-      details: { exception.param => ["is required"] }
+      details: { exception.param => [ "is required" ] }
     )
   end
 

@@ -71,7 +71,7 @@ RSpec.describe Product, type: :model do
 
   describe "sku format and normalization" do
     it "accepts uppercase letters, digits and hyphens" do
-      ["ABC-123", "A", "1", "A-1", "-ABC", "ABC-"].each do |good|
+      [ "ABC-123", "A", "1", "A-1", "-ABC", "ABC-" ].each do |good|
         expect(build(:product, sku: good)).to(be_valid, "expected #{good.inspect} to be valid")
       end
     end
@@ -84,7 +84,7 @@ RSpec.describe Product, type: :model do
     end
 
     it "rejects values that remain invalid after upcasing (incl. hyphen-only)" do
-      ["AB C", "ABC_1", "ABC!", "-", "---", "A/B", "AB\nCD"].each do |bad|
+      [ "AB C", "ABC_1", "ABC!", "-", "---", "A/B", "AB\nCD" ].each do |bad|
         expect(build(:product, sku: bad)).to(be_invalid, "expected #{bad.inspect} to be invalid")
       end
     end
@@ -170,11 +170,11 @@ RSpec.describe Product, type: :model do
       end
 
       it "returns everything for blank input" do
-        [nil, "", "   "].each { |blank| expect(Product.by_state(blank)).to match_array([active_widget, inactive_gadget]) }
+        [ nil, "", "   " ].each { |blank| expect(Product.by_state(blank)).to match_array([ active_widget, inactive_gadget ]) }
       end
 
       it "returns everything (never silently active-only) for garbage input" do
-        %w[banana 2 yes maybe].each { |garbage| expect(Product.by_state(garbage)).to match_array([active_widget, inactive_gadget]) }
+        %w[banana 2 yes maybe].each { |garbage| expect(Product.by_state(garbage)).to match_array([ active_widget, inactive_gadget ]) }
       end
     end
 
@@ -185,8 +185,8 @@ RSpec.describe Product, type: :model do
       end
 
       it "returns everything for blank input" do
-        expect(Product.search_by_name("")).to match_array([active_widget, inactive_gadget])
-        expect(Product.search_by_name(nil)).to match_array([active_widget, inactive_gadget])
+        expect(Product.search_by_name("")).to match_array([ active_widget, inactive_gadget ])
+        expect(Product.search_by_name(nil)).to match_array([ active_widget, inactive_gadget ])
       end
 
       it "treats % and _ as literals (escapes LIKE wildcards)" do

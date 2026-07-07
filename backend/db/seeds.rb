@@ -15,7 +15,7 @@ created = 0
     p.name        = "#{ADJECTIVES[i % ADJECTIVES.size]} #{NOUNS[i % NOUNS.size]} #{i + 1}"
     p.description  = "High-quality #{NOUNS[i % NOUNS.size].downcase} for everyday use. Unit ##{i + 1}."
     p.price        = (rand(1.0..999.0)).round(2)
-    p.stock        = i.even? ? rand(1..500) : [0, rand(1..500)].sample
+    p.stock        = i.even? ? rand(1..500) : [ 0, rand(1..500) ].sample
     p.active       = (i % 3 != 0) # ~1/3 inactive
   end
   created += 1 if product.previously_new_record?

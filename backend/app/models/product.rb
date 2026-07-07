@@ -28,7 +28,7 @@ class Product < ApplicationRecord
                   format: { with: SKU_FORMAT,
                             message: "only allows uppercase letters, numbers, and hyphens" }
   # inclusion (not presence) — presence would reject the valid value `false`.
-  validates :active, inclusion: { in: [true, false] }
+  validates :active, inclusion: { in: [ true, false ] }
 
   scope :active_only,   -> { where(active: true) }
   scope :inactive_only, -> { where(active: false) }
