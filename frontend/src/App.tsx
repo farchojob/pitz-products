@@ -4,22 +4,23 @@ import { ProductsPage } from '@/features/products/products-page'
 
 function App() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Package className="h-5 w-5" />
-            </div>
-            <div>
-              <h1 className="text-lg leading-tight font-semibold">Product Manager</h1>
-              <p className="text-sm text-muted-foreground">PITZ inventory</p>
-            </div>
+    <div className="min-h-screen">
+      {/* Navy Pitz app-bar. `dark` makes it a consistent dark island in both
+          themes, so the outline mode-toggle stays legible on the navy ground. */}
+      <header className="dark sticky top-0 z-40 border-b border-white/10 bg-brand-navy text-foreground">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm shadow-primary/40">
+              <Package className="h-4 w-4" />
+            </span>
+            <span className="text-lg font-bold tracking-tight text-white">Pitz</span>
+            <span className="hidden h-3.5 w-px bg-white/25 sm:block" />
+            <span className="hidden text-sm text-white/55 sm:block">Products</span>
           </div>
           <ModeToggle />
         </div>
       </header>
-      <main className="mx-auto max-w-5xl px-4 py-6">
+      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
         <ProductsPage />
       </main>
     </div>

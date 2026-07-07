@@ -20,5 +20,10 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
     css: true,
+    // Pin the API base so the MSW mocks always match, regardless of any local
+    // .env file (e.g. a dev .env.local pointing at a deployed API).
+    env: {
+      VITE_API_URL: 'http://localhost:3000/api/v1',
+    },
   },
 })

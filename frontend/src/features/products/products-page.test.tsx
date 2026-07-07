@@ -271,6 +271,49 @@ describe('ProductsPage — CRUD end-to-end', () => {
   })
 })
 
+describe('ProductsPage — view toggle', () => {
+  it('switches from the table to a product grid and back', async () => {
+    seedProducts([{ name: 'Alpha Widget' }])
+    const user = userEvent.setup()
+    renderWithClient(<ProductsPage />)
+    await screen.findByRole('table')
+
+    await user.click(screen.getByRole('button', { name: /grid view/i }))
+    await waitFor(() => expect(screen.queryByRole('table')).not.toBeInTheDocument())
+    expect(screen.getByText('Alpha Widget')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /table view/i }))
+    expect(await screen.findByRole('table')).toBeInTheDocument()
+  })
+
+  it('remembers the grid preference across remounts', async () => {
+    // The test env ships a method-less localStorage, so stub a working one.
+    const store = new Map<string, string>()
+    vi.stubGlobal('localStorage', {
+      getItem: (key: string) => store.get(key) ?? null,
+      setItem: (key: string, value: string) => void store.set(key, value),
+      removeItem: (key: string) => void store.delete(key),
+      clear: () => store.clear(),
+    })
+    try {
+      seedProducts([{ name: 'Alpha Widget' }])
+      const user = userEvent.setup()
+      const { unmount } = renderWithClient(<ProductsPage />)
+      await screen.findByRole('table')
+      await user.click(screen.getByRole('button', { name: /grid view/i }))
+      await waitFor(() => expect(screen.queryByRole('table')).not.toBeInTheDocument())
+      unmount()
+
+      // A fresh mount reads the saved preference — grid, not the default table.
+      renderWithClient(<ProductsPage />)
+      await waitFor(() => expect(screen.getByText('Alpha Widget')).toBeInTheDocument())
+      expect(screen.queryByRole('table')).not.toBeInTheDocument()
+    } finally {
+      vi.unstubAllGlobals()
+    }
+  })
+})
+
 describe('ProductsPage — URL state', () => {
   it('reflects the search term in the URL', async () => {
     seedProducts([{ name: 'Alpha Widget' }])

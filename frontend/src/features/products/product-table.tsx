@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { cn } from '@/lib/utils'
 import { formatDate, formatPrice } from '@/lib/format'
 import type { Product } from '@/types/product'
 import { StatusBadge } from './status-badge'
@@ -18,13 +19,29 @@ interface Props {
   onDelete: (product: Product) => void
 }
 
+// Colour stock by health so a depleted catalog jumps out: red at zero, amber when low.
+function StockCell({ stock }: { stock: number }) {
+  const tone = stock === 0 ? 'text-destructive' : stock <= 5 ? 'text-warning' : 'text-foreground'
+  return (
+    <span className={cn('inline-flex items-center gap-1.5 tabular-nums', tone)}>
+      {stock}
+      {stock === 0 && (
+        <span className="text-[10px] font-medium uppercase tracking-wide opacity-80">out</span>
+      )}
+      {stock > 0 && stock <= 5 && (
+        <span className="text-[10px] font-medium uppercase tracking-wide opacity-80">low</span>
+      )}
+    </span>
+  )
+}
+
 export function ProductTable({ products, onEdit, onDelete }: Props) {
   return (
-    <div className="hidden overflow-hidden rounded-lg border md:block">
+    <div className="hidden overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm md:block">
       <Table>
         <caption className="sr-only">Products</caption>
-        <TableHeader>
-          <TableRow>
+        <TableHeader className="[&_th]:h-11 [&_th]:px-4 [&_th]:text-[11px] [&_th]:font-medium [&_th]:tracking-wider [&_th]:text-muted-foreground [&_th]:uppercase">
+          <TableRow className="border-border/70 bg-muted/40 hover:bg-muted/40">
             <TableHead>Name</TableHead>
             <TableHead>SKU</TableHead>
             <TableHead className="text-right">Price</TableHead>
@@ -34,19 +51,29 @@ export function ProductTable({ products, onEdit, onDelete }: Props) {
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className="[&_td]:px-4 [&_td]:py-3">
           {products.map((product) => (
-            <TableRow key={product.id}>
+            <TableRow key={product.id} className="group border-border/60">
               <TableCell className="font-medium">{product.name}</TableCell>
-              <TableCell className="font-mono text-xs text-muted-foreground">{product.sku}</TableCell>
-              <TableCell className="text-right tabular-nums">{formatPrice(product.price)}</TableCell>
-              <TableCell className="text-right tabular-nums">{product.stock}</TableCell>
+              <TableCell>
+                <span className="rounded-md bg-muted px-1.5 py-0.5 font-mono text-xs text-muted-foreground">
+                  {product.sku}
+                </span>
+              </TableCell>
+              <TableCell className="text-right font-medium tabular-nums">
+                {formatPrice(product.price)}
+              </TableCell>
+              <TableCell className="text-right">
+                <StockCell stock={product.stock} />
+              </TableCell>
               <TableCell>
                 <StatusBadge active={product.active} />
               </TableCell>
-              <TableCell className="text-muted-foreground">{formatDate(product.updated_at)}</TableCell>
+              <TableCell className="text-sm text-muted-foreground">
+                {formatDate(product.updated_at)}
+              </TableCell>
               <TableCell className="text-right">
-                <div className="flex justify-end gap-1">
+                <div className="flex justify-end gap-1 opacity-70 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
                   <Button
                     variant="ghost"
                     size="icon"
@@ -60,6 +87,7 @@ export function ProductTable({ products, onEdit, onDelete }: Props) {
                     size="icon"
                     aria-label={`Delete ${product.name}`}
                     onClick={() => onDelete(product)}
+                    className="hover:bg-destructive/10"
                   >
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
