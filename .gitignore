@@ -1,0 +1,48 @@
+# ============================================================
+# SECRETS — never commit real env files or keys
+# (example templates are re-included below)
+# ============================================================
+.env
+.env.*
+*.env
+!.env.example
+!*.env.example
+backend/config/master.key
+backend/config/credentials/*.key
+
+# ============================================================
+# Local dev helper (resolved Ruby PATH for the keg-only brew ruby)
+# ============================================================
+.dev-env
+
+# ============================================================
+# OS / editor noise
+# ============================================================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
+
+# ============================================================
+# Backend — Ruby on Rails
+# ============================================================
+backend/log/*
+backend/tmp/*
+backend/storage/*
+backend/coverage/
+backend/.bundle/
+backend/vendor/bundle/
+backend/public/assets/
+!backend/log/.keep
+!backend/tmp/.keep
+
+# ============================================================
+# Frontend — Node / Vite
+# ============================================================
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+frontend/.vite/
+frontend/*.local
