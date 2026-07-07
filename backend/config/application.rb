@@ -40,5 +40,9 @@ module Backend
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # Log and drop unknown request params rather than raising, so the API tolerates
+    # clients that send extra fields; strong params still filter them from writes.
+    config.action_controller.action_on_unpermitted_parameters = :log
   end
 end

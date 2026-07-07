@@ -8,12 +8,17 @@ module Api
         products = Product
                    .search_by_name(params[:search])
                    .by_state(params[:active])
-                   .order(created_at: :desc)
+                   .order(created_at: :desc, id: :desc)
                    .page(params[:page])
                    .per(per_page)
 
+        # When the requested page is past the last one, skip loading records — this
+        # avoids a huge OFFSET scan for something like ?page=99999999 (the data is
+        # empty anyway). The COUNT for the metadata still runs and is cheap.
+        records = products.out_of_range? ? [] : products
+
         render json: {
-          data: ProductBlueprint.render_as_hash(products),
+          data: ProductBlueprint.render_as_hash(records),
           meta: pagination_meta(products)
         }
       end
@@ -69,8 +74,16 @@ module Api
           pages: scope.total_pages,
           per_page: per_page,
           next: scope.next_page,
-          prev: scope.prev_page
+          prev: previous_page_for(scope)
         }
+      end
+
+      # Beyond the last page there is no Kaminari prev_page; point the client back to
+      # the last real page so a meta-only consumer can always recover.
+      def previous_page_for(scope)
+        return scope.prev_page unless scope.out_of_range?
+
+        scope.total_pages.positive? ? scope.total_pages : nil
       end
     end
   end

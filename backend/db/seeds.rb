@@ -5,8 +5,8 @@
 # Generates 55 products (≈6 pages at 10/page) with a mix of active/inactive and
 # some zero-stock items, so pagination, filtering and search are all demoable.
 
-ADJECTIVES = %w[Premium Classic Rugged Compact Deluxe Eco Smart Portable Industrial Precision].freeze
-NOUNS      = %w[Widget Gadget Drill Sensor Bracket Cable Adapter Valve Bearing Toolkit Fastener Module].freeze
+ADJECTIVES = %w[Premium Classic Rugged Compact Deluxe Eco Smart Portable Industrial Precision].freeze unless defined?(ADJECTIVES)
+NOUNS      = %w[Widget Gadget Drill Sensor Bracket Cable Adapter Valve Bearing Toolkit Fastener Module].freeze unless defined?(NOUNS)
 
 created = 0
 55.times do |i|
