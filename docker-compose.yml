@@ -1,0 +1,44 @@
+# One-command local stack: `docker compose up --build`
+#   frontend → http://localhost:8080   API → http://localhost:3000/api/v1
+# Runs in development mode, so no RAILS_MASTER_KEY is required.
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: pitz
+      POSTGRES_PASSWORD: pitz
+      POSTGRES_DB: pitz_products_development
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pitz"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    environment:
+      DATABASE_URL: postgres://pitz:pitz@db:5432/pitz_products_development
+      FRONTEND_ORIGIN: http://localhost:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:3000/api/v1
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
