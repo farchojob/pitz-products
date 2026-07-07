@@ -23,8 +23,9 @@ services:
     plan: free
     rootDir: backend
     buildCommand: bundle install
-    preDeployCommand: bundle exec rails db:prepare && bundle exec rails db:seed
-    startCommand: bundle exec rails server
+    # Free tier doesn't support preDeployCommand, so migrate + seed at boot (both are
+    # idempotent, so re-running on every cold start is safe) right before Puma binds the port.
+    startCommand: bundle exec rails db:prepare && bundle exec rails db:seed && bundle exec rails server
     healthCheckPath: /up
     envVars:
       - key: RAILS_ENV
