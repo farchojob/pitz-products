@@ -12,6 +12,10 @@ class Product < ApplicationRecord
   # zod schema (^(?=.*[A-Z0-9])[A-Z0-9-]+$) so client and server accept/reject the same SKUs.
   SKU_FORMAT = /\A(?=.*[A-Z0-9])[A-Z0-9-]+\z/
 
+  # Optional product image: either a local /uploads path (from our upload endpoint)
+  # or an absolute http(s) URL. Blank means "no image" (a designed fallback renders).
+  IMAGE_URL_FORMAT = %r{\A(?:https?://\S+|/uploads/[\w./-]+)\z}
+
   before_validation :normalize_sku
 
   validates :name, presence: true, length: { minimum: 3, maximum: 100 }
@@ -29,6 +33,10 @@ class Product < ApplicationRecord
                             message: "only allows uppercase letters, numbers, and hyphens" }
   # inclusion (not presence) — presence would reject the valid value `false`.
   validates :active, inclusion: { in: [ true, false ] }
+  validates :image_url, length: { maximum: 512 },
+                        format: { with: IMAGE_URL_FORMAT,
+                                  message: "must be an http(s) URL or an /uploads path" },
+                        allow_blank: true
 
   scope :active_only,   -> { where(active: true) }
   scope :inactive_only, -> { where(active: false) }

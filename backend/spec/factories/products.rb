@@ -6,6 +6,7 @@ FactoryBot.define do
     price { 19.99 }
     stock { 42 }
     active { true }
+    image_url { nil }
 
     trait :inactive do
       active { false }
@@ -13,6 +14,10 @@ FactoryBot.define do
 
     trait :zero_stock do
       stock { 0 }
+    end
+
+    trait :with_image do
+      image_url { "/uploads/seed/1.jpg" }
     end
   end
 end

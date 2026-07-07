@@ -6,7 +6,10 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :products
+      resources :products do
+        get :stats, on: :collection
+      end
+      resources :uploads, only: :create
     end
   end
 end

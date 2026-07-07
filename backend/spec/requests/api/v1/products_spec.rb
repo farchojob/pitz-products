@@ -122,12 +122,45 @@ RSpec.describe "Api::V1::Products", type: :request do
       expect(json["data"]["price"]).to be_a(String)
     end
 
+    it "exposes image_url (both the set and the nil case)" do
+      get "/api/v1/products/#{create(:product, :with_image).id}"
+      expect(json["data"]["image_url"]).to eq("/uploads/seed/1.jpg")
+
+      get "/api/v1/products/#{create(:product, sku: 'NOIMG-1').id}"
+      expect(json["data"]["image_url"]).to be_nil
+    end
+
     it "returns a 404 envelope for an unknown id" do
       get "/api/v1/products/999999"
       expect(response).to have_http_status(:not_found)
       expect(json["error"]).to eq(
         "status" => 404, "code" => "not_found", "message" => "Resource not found", "details" => {}
       )
+    end
+  end
+
+  describe "GET /api/v1/products/stats" do
+    it "returns whole-catalog KPIs computed over kept products" do
+      create_list(:product, 3, active: true, stock: 100) # 1999.00 each in value
+      create(:product, active: false, stock: 0, sku: "OUT-1")
+      create(:product, active: true, stock: 3, sku: "LOW-1") # 59.97 in value
+      get "/api/v1/products/stats"
+      expect(response).to have_http_status(:ok)
+      expect(json["data"]).to include("total" => 5, "active" => 4, "out" => 1, "low" => 1)
+      expect(json["data"]["inventory_value"]).to eq("6056.97")
+    end
+
+    it "ignores soft-deleted products" do
+      create(:product).discard
+      create(:product, sku: "KEPT-1")
+      get "/api/v1/products/stats"
+      expect(json["data"]["total"]).to eq(1)
+    end
+
+    it "resolves to the stats action, not show with id='stats'" do
+      get "/api/v1/products/stats"
+      expect(response).to have_http_status(:ok)
+      expect(json["data"]).to have_key("inventory_value")
     end
   end
 
@@ -154,6 +187,18 @@ RSpec.describe "Api::V1::Products", type: :request do
     it "round-trips active:false" do
       post "/api/v1/products", params: { product: valid.merge(active: false, sku: "INA-1") }, as: :json
       expect(json["data"]["active"]).to be(false)
+    end
+
+    it "accepts and persists a valid image_url" do
+      post "/api/v1/products", params: { product: valid.merge(image_url: "/uploads/seed/2.jpg", sku: "IMG-1") }, as: :json
+      expect(response).to have_http_status(:created)
+      expect(json["data"]["image_url"]).to eq("/uploads/seed/2.jpg")
+    end
+
+    it "returns 422 with an image_url detail for a malformed value" do
+      post "/api/v1/products", params: { product: valid.merge(image_url: "not a url", sku: "IMG-2") }, as: :json
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(json["error"]["details"]).to have_key("image_url")
     end
 
     it "returns 422 parameter_missing when the product key is absent" do

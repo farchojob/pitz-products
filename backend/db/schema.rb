@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_07_07_035533) do
+ActiveRecord::Schema[7.1].define(version: 2026_07_07_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
   enable_extension "plpgsql"
@@ -47,6 +47,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_07_07_035533) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "discarded_at"
+    t.string "image_url"
     t.index "lower((sku)::text)", name: "index_products_on_lower_sku", unique: true, where: "(discarded_at IS NULL)"
     t.index ["active"], name: "index_products_on_active"
     t.index ["discarded_at"], name: "index_products_on_discarded_at"

@@ -69,6 +69,30 @@ RSpec.describe Product, type: :model do
     end
   end
 
+  describe "image_url" do
+    it "is optional (nil or blank allowed)" do
+      expect(build(:product, image_url: nil)).to be_valid
+      expect(build(:product, image_url: "")).to be_valid
+    end
+
+    it "accepts a local /uploads path or an http(s) URL" do
+      [ "/uploads/seed/1.jpg", "/uploads/abc-123.png", "https://cdn.example.com/p.jpg",
+        "http://example.com/p.webp" ].each do |good|
+        expect(build(:product, image_url: good)).to(be_valid, "expected #{good.inspect} to be valid")
+      end
+    end
+
+    it "rejects junk, other schemes, and paths outside /uploads" do
+      [ "not a url", "ftp://x/y.jpg", "/etc/passwd", "javascript:alert(1)", "uploads/no-slash.jpg" ].each do |bad|
+        expect(build(:product, image_url: bad)).to(be_invalid, "expected #{bad.inspect} to be invalid")
+      end
+    end
+
+    it "rejects an over-long value (> 512 chars)" do
+      expect(build(:product, image_url: "https://x.com/#{"a" * 520}.jpg")).to be_invalid
+    end
+  end
+
   describe "sku format and normalization" do
     it "accepts uppercase letters, digits and hyphens" do
       [ "ABC-123", "A", "1", "A-1", "-ABC", "ABC-" ].each do |good|

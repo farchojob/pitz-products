@@ -44,6 +44,12 @@ backend/public/assets/
 !backend/log/.keep
 !backend/tmp/.keep
 
+# Runtime product-image uploads are local + ephemeral; committed seed images
+# under public/uploads/seed/ ship with the demo so it has imagery out of the box.
+backend/public/uploads/*
+!backend/public/uploads/seed/
+!backend/public/uploads/.keep
+
 # ============================================================
 # Frontend — Node / Vite
 # ============================================================

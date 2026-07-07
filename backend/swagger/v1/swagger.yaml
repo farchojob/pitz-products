@@ -158,6 +158,53 @@ paths:
       responses:
         '204':
           description: no content
+  "/api/v1/products/stats":
+    get:
+      summary: Whole-catalog KPIs for the metrics strip
+      tags:
+      - Products
+      responses:
+        '200':
+          description: catalog stats
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    "$ref": "#/components/schemas/CatalogStats"
+  "/api/v1/uploads":
+    post:
+      summary: Uploads a product image to the local uploads folder
+      tags:
+      - Uploads
+      parameters: []
+      responses:
+        '201':
+          description: stored
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+        '422':
+          description: invalid upload
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: string
+              format: binary
+        required: true
 components:
   schemas:
     Product:
@@ -185,6 +232,10 @@ components:
         active:
           type: boolean
           example: true
+        image_url:
+          type: string
+          nullable: true
+          example: "/uploads/seed/1.jpg"
         created_at:
           type: string
           format: date-time
@@ -220,11 +271,31 @@ components:
           description: Uppercase letters, numbers and hyphens
         active:
           type: boolean
+        image_url:
+          type: string
+          nullable: true
+          description: Local /uploads path or an http(s) URL
       required:
       - name
       - price
       - stock
       - sku
+    CatalogStats:
+      type: object
+      properties:
+        total:
+          type: integer
+        active:
+          type: integer
+        out:
+          type: integer
+          description: stock = 0
+        low:
+          type: integer
+          description: stock between 1 and 5
+        inventory_value:
+          type: string
+          description: SUM(price * stock), serialized as a string
     PaginationMeta:
       type: object
       properties:

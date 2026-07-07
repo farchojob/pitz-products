@@ -106,4 +106,40 @@ RSpec.describe 'Products', type: :request, openapi_spec: 'v1/swagger.yaml' do
       end
     end
   end
+
+  path '/api/v1/products/stats' do
+    get 'Whole-catalog KPIs for the metrics strip' do
+      tags 'Products'
+      produces 'application/json'
+
+      response 200, 'catalog stats' do
+        before { create_list(:product, 3) }
+        schema type: :object, properties: { data: { '$ref' => '#/components/schemas/CatalogStats' } }
+        run_test!
+      end
+    end
+  end
+
+  path '/api/v1/uploads' do
+    post 'Uploads a product image to the local uploads folder' do
+      tags 'Uploads'
+      consumes 'multipart/form-data'
+      produces 'application/json'
+      parameter name: :file, in: :formData, schema: { type: :string, format: :binary }, required: true
+
+      response 201, 'stored' do
+        let(:file) { Rack::Test::UploadedFile.new(Rails.root.join('public/uploads/seed/1.jpg'), 'image/jpeg') }
+        after { Dir[Rails.root.join('public/uploads/*.jpg')].each { |f| FileUtils.rm_f(f) } }
+        schema type: :object,
+               properties: { data: { type: :object, properties: { url: { type: :string } } } }
+        run_test!
+      end
+
+      response 422, 'invalid upload' do
+        let(:file) { Rack::Test::UploadedFile.new(Rails.root.join('public/uploads/seed/1.jpg'), 'application/pdf') }
+        schema '$ref' => '#/components/schemas/Error'
+        run_test!
+      end
+    end
+  end
 end

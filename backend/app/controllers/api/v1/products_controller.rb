@@ -24,6 +24,12 @@ module Api
         }
       end
 
+      # GET /api/v1/products/stats — whole-catalog KPIs for the metrics strip.
+      # Computed over every kept product (independent of the list's paging/filters).
+      def stats
+        render json: { data: catalog_stats }
+      end
+
       # GET /api/v1/products/:id
       def show
         render json: { data: ProductBlueprint.render_as_hash(@product) }
@@ -57,7 +63,22 @@ module Api
       end
 
       def product_params
-        params.require(:product).permit(:name, :description, :price, :stock, :sku, :active)
+        params.require(:product).permit(:name, :description, :price, :stock, :sku, :active, :image_url)
+      end
+
+      # One aggregate query over the kept catalog. FILTER (PostgreSQL) counts each
+      # bucket in a single pass; inventory_value is a decimal serialized as a string
+      # (same precision reasoning as price).
+      def catalog_stats
+        total, active, out, low, value = Product.kept.pick(
+          Arel.sql("COUNT(*)"),
+          Arel.sql("COUNT(*) FILTER (WHERE active)"),
+          Arel.sql("COUNT(*) FILTER (WHERE stock = 0)"),
+          Arel.sql("COUNT(*) FILTER (WHERE stock BETWEEN 1 AND 5)"),
+          Arel.sql("COALESCE(SUM(price * stock), 0)")
+        )
+        { total: total, active: active, out: out, low: low,
+          inventory_value: format("%.2f", value) }
       end
 
       # Default 10 per page, capped at 100 so a client can't request an unbounded payload.

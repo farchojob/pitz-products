@@ -30,6 +30,7 @@ RSpec.configure do |config|
               stock: { type: :integer, example: 42 },
               sku: { type: :string, example: 'SKU-0001' },
               active: { type: :boolean, example: true },
+              image_url: { type: :string, nullable: true, example: '/uploads/seed/1.jpg' },
               created_at: { type: :string, format: 'date-time' },
               updated_at: { type: :string, format: 'date-time' }
             },
@@ -43,9 +44,20 @@ RSpec.configure do |config|
               price: { type: :string, description: 'Decimal > 0' },
               stock: { type: :integer, minimum: 0 },
               sku: { type: :string, description: 'Uppercase letters, numbers and hyphens' },
-              active: { type: :boolean }
+              active: { type: :boolean },
+              image_url: { type: :string, nullable: true, description: 'Local /uploads path or an http(s) URL' }
             },
             required: %w[name price stock sku]
+          },
+          CatalogStats: {
+            type: :object,
+            properties: {
+              total: { type: :integer },
+              active: { type: :integer },
+              out: { type: :integer, description: 'stock = 0' },
+              low: { type: :integer, description: 'stock between 1 and 5' },
+              inventory_value: { type: :string, description: 'SUM(price * stock), serialized as a string' }
+            }
           },
           PaginationMeta: {
             type: :object,

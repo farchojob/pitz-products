@@ -7,18 +7,24 @@
 
 ADJECTIVES = %w[Premium Classic Rugged Compact Deluxe Eco Smart Portable Industrial Precision].freeze unless defined?(ADJECTIVES)
 NOUNS      = %w[Widget Gadget Drill Sensor Bracket Cable Adapter Valve Bearing Toolkit Fastener Module].freeze unless defined?(NOUNS)
+SEED_IMAGES = 10 # local images committed under public/uploads/seed/
 
 created = 0
 55.times do |i|
   sku = "SKU-#{(i + 1).to_s.rjust(4, "0")}"
+  # ~1 in 6 has no image, so the designed no-media fallback is exercised too.
+  image = (i % 6 == 5) ? nil : "/uploads/seed/#{(i % SEED_IMAGES) + 1}.jpg"
   product = Product.find_or_create_by!(sku: sku) do |p|
     p.name        = "#{ADJECTIVES[i % ADJECTIVES.size]} #{NOUNS[i % NOUNS.size]} #{i + 1}"
     p.description  = "High-quality #{NOUNS[i % NOUNS.size].downcase} for everyday use. Unit ##{i + 1}."
     p.price        = (rand(1.0..999.0)).round(2)
     p.stock        = i.even? ? rand(1..500) : [ 0, rand(1..500) ].sample
     p.active       = (i % 3 != 0) # ~1/3 inactive
+    p.image_url    = image
   end
   created += 1 if product.previously_new_record?
+  # Backfill imagery onto products created before image_url existed (don't clobber).
+  product.update!(image_url: image) if image.present? && product.image_url.blank?
 end
 
 puts "Seeds complete. Created #{created} new products (#{Product.count} total)."
