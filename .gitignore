@@ -58,3 +58,6 @@ frontend/dist/
 frontend/coverage/
 frontend/.vite/
 frontend/*.local
+
+# Design handoff reference bundle (HTML prototype) — kept local, not shipped.
+frontend/design_handoff_premium_redesign/
