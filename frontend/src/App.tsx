@@ -1,4 +1,3 @@
-import { Package } from 'lucide-react'
 import { ModeToggle } from '@/components/mode-toggle'
 import { ProductsPage } from '@/features/products/products-page'
 
@@ -10,10 +9,8 @@ function App() {
       <header className="dark sticky top-0 z-40 bg-brand-navy/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-[30px] w-[30px] items-center justify-center rounded-[10px] bg-gradient-to-br from-primary to-primary/65 text-white shadow-lg shadow-primary/40 ring-1 ring-inset ring-white/20">
-              <Package className="h-4 w-4" />
-            </span>
-            <span className="text-[18px] font-bold tracking-[-0.03em] text-white">Pitz</span>
+            {/* Swap this file with the official vector to update the mark, no code change. */}
+            <img src="/pitz-logo.svg" alt="Pitz" className="h-5 w-auto" />
             <span className="h-3.5 w-px bg-white/25" />
             <span className="font-mono text-[11px] tracking-[0.14em] text-white/55 uppercase">
               Products
