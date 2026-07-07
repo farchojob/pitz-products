@@ -8,6 +8,14 @@
     "allowArbitraryExtensions": true,
     "skipLibCheck": true,
 
+    /* Strictness (assignment requires strict TS; no implicit any) */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+
+    /* Path alias @/* -> src/* (paths resolve relative to this file in TS 6+) */
+    "paths": { "@/*": ["./src/*"] },
+
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
