@@ -5,7 +5,7 @@
 A full-stack **product management (CRUD)** application built for the PITZ technical challenge: a Ruby on Rails API and a React + TypeScript frontend, with search, filtering, pagination, validation on both ends, and a full test suite.
 
 > **🔗 Live demo:** **[pitz-products-web.onrender.com](https://pitz-products-web.onrender.com)** — API health at [`/up`](https://pitz-products-api.onrender.com/up) · Swagger docs at [`/api-docs`](https://pitz-products-api.onrender.com/api-docs).
-> _Hosted on Render's free tier, so the first request after a period of inactivity can take ~30s to wake the service._
+> _The API runs on an always-on instance (no cold start); the static frontend is served from a CDN._
 
 ![Pitz Products — catalog grid, dark](docs/screenshots/product-list.png)
 
@@ -187,7 +187,7 @@ Base path: `/api/v1`. Envelope: successful reads/writes return `{ "data": ... }`
 - Authentication + actor attribution for the audit trail (audits record what/when, not who).
 - Error tracking and metrics (e.g. Sentry) plus structured request logging.
 - A page-size selector and column sorting on the list.
-- A keep-alive ping (or a paid tier) so the free Render service doesn't cold-start.
+- A persistent disk (or a cloud object store) for uploads, and a paid/managed Postgres — the free DB is time-limited and runtime uploads are ephemeral.
 
 ## FAQ
 
