@@ -70,6 +70,7 @@ describe('ProductFormDialog — create', () => {
 
     await user.click(screen.getByRole('button', { name: /create product/i }))
     expect(await screen.findByText(/has already been taken/i)).toBeInTheDocument()
+    expect(screen.getByLabelText('SKU')).toHaveAttribute('aria-invalid', 'true')
   })
 })
 

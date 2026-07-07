@@ -64,4 +64,16 @@ describe('productFormSchema', () => {
       expect(productFormSchema.safeParse({ ...VALID, active: false }).success).toBe(true)
     })
   })
+
+  describe('coercion (the path the number inputs feed)', () => {
+    it('coerces a numeric string price to a number', () => {
+      const result = productFormSchema.safeParse({ ...VALID, price: '19.99' })
+      expect(result.success).toBe(true)
+      if (result.success) expect(result.data.price).toBe(19.99)
+    })
+    it('rejects NaN price and stock (empty number inputs)', () => {
+      expect(productFormSchema.safeParse({ ...VALID, price: Number.NaN }).success).toBe(false)
+      expect(productFormSchema.safeParse({ ...VALID, stock: Number.NaN }).success).toBe(false)
+    })
+  })
 })

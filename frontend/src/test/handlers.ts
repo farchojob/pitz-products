@@ -7,6 +7,9 @@ const BASE = 'http://localhost:3000/api/v1'
 let db: Product[] = []
 let nextId = 1
 
+/** Records mutating requests so tests can assert the exact payload sent. */
+export const requestLog: Array<{ method: string; id: string | null; body: unknown }> = []
+
 export function seedProducts(overrides: Partial<Product>[] = []): Product[] {
   db = overrides.map((item, index) => ({
     id: index + 1,
@@ -27,6 +30,7 @@ export function seedProducts(overrides: Partial<Product>[] = []): Product[] {
 export function resetDb() {
   db = []
   nextId = 1
+  requestLog.length = 0
 }
 
 const notFound = () =>
@@ -71,7 +75,9 @@ export const handlers = [
   }),
 
   http.post(`${BASE}/products`, async ({ request }) => {
-    const { product: p } = (await request.json()) as { product: Record<string, unknown> }
+    const body = (await request.json()) as { product: Record<string, unknown> }
+    requestLog.push({ method: 'POST', id: null, body })
+    const p = body.product
     const sku = String(p.sku ?? '').toUpperCase()
     if (db.some((x) => x.sku.toLowerCase() === sku.toLowerCase())) {
       return HttpResponse.json(
@@ -105,7 +111,9 @@ export const handlers = [
     const index = db.findIndex((p) => p.id === Number(params.id))
     if (index === -1) return notFound()
     const current = db[index]!
-    const { product: p } = (await request.json()) as { product: Record<string, unknown> }
+    const body = (await request.json()) as { product: Record<string, unknown> }
+    requestLog.push({ method: 'PUT', id: String(params.id), body })
+    const p = body.product
     const updated: Product = {
       ...current,
       ...(p.name !== undefined ? { name: String(p.name) } : {}),
@@ -122,6 +130,7 @@ export const handlers = [
   http.delete(`${BASE}/products/:id`, ({ params }) => {
     const index = db.findIndex((p) => p.id === Number(params.id))
     if (index === -1) return notFound()
+    requestLog.push({ method: 'DELETE', id: String(params.id), body: null })
     db.splice(index, 1)
     return new HttpResponse(null, { status: 204 })
   }),

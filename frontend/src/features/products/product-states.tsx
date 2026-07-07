@@ -4,7 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export function ListSkeleton() {
   return (
-    <div className="space-y-3 rounded-lg border p-4">
+    <div role="status" aria-label="Loading products" className="space-y-3 rounded-lg border p-4">
       {Array.from({ length: 8 }).map((_, index) => (
         <div key={index} className="flex items-center gap-4">
           <Skeleton className="h-5 w-1/3" />
