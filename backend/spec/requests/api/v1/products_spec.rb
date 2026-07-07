@@ -233,10 +233,21 @@ RSpec.describe "Api::V1::Products", type: :request do
   describe "DELETE /api/v1/products/:id" do
     let!(:product) { create(:product) }
 
-    it "returns 204 and removes the record" do
-      expect { delete "/api/v1/products/#{product.id}" }.to change(Product, :count).by(-1)
+    it "soft-deletes: 204, retained in the DB but gone from the API" do
+      expect { delete "/api/v1/products/#{product.id}" }.to change(Product.kept, :count).by(-1)
       expect(response).to have_http_status(:no_content)
       expect(response.body).to be_empty
+      expect(Product.count).to eq(1) # the row is kept
+      expect(product.reload.discarded?).to be(true)
+
+      get "/api/v1/products/#{product.id}" # reads as gone
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "excludes soft-deleted products from the list" do
+      product.discard
+      get "/api/v1/products"
+      expect(json["meta"]["total"]).to eq(0)
     end
 
     it "returns 404 for an unknown id" do

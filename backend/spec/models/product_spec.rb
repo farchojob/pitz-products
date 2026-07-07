@@ -134,6 +134,21 @@ RSpec.describe Product, type: :model do
     end
   end
 
+  describe "soft delete (discard)" do
+    it "hides the record from .kept while keeping the row" do
+      product = create(:product)
+      expect { product.discard }.to change(Product.kept, :count).by(-1)
+      expect(Product.count).to eq(1)
+      expect(product.discarded?).to be(true)
+    end
+
+    it "lets a discarded product's SKU be reused" do
+      create(:product, sku: "REUSE-1").discard
+      expect(build(:product, sku: "REUSE-1")).to be_valid
+      expect { create(:product, sku: "REUSE-1") }.not_to raise_error
+    end
+  end
+
   describe "scopes" do
     let!(:active_widget)   { create(:product, name: "Premium Widget", active: true,  sku: "W-1") }
     let!(:inactive_gadget) { create(:product, name: "Cheap Gadget",   active: false, sku: "G-1") }

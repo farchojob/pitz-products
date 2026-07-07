@@ -1,4 +1,12 @@
 class Product < ApplicationRecord
+  # Soft deletes: adds `discard`/`undiscard` and the `kept`/`discarded` scopes.
+  # No default_scope on purpose — queries opt in with `.kept` so nothing is hidden by surprise.
+  include Discard::Model
+
+  # Change auditing: records what changed and when on every create/update/destroy.
+  # The actor ("who") is null here because the app has no authentication (see README).
+  audited
+
   # Uppercase letters, digits and hyphens, requiring at least one alphanumeric so a
   # pure-punctuation SKU like "-" or "---" is rejected. Kept identical to the frontend
   # zod schema (^(?=.*[A-Z0-9])[A-Z0-9-]+$) so client and server accept/reject the same SKUs.
@@ -14,8 +22,9 @@ class Product < ApplicationRecord
                     numericality: { greater_than: 0, less_than: 100_000_000 }
   validates :stock, presence: true,
                     numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  # Uniqueness scoped to kept rows (matching the partial DB index) so a discarded SKU is reusable.
   validates :sku, presence: true,
-                  uniqueness: { case_sensitive: false },
+                  uniqueness: { case_sensitive: false, conditions: -> { kept } },
                   format: { with: SKU_FORMAT,
                             message: "only allows uppercase letters, numbers, and hyphens" }
   # inclusion (not presence) — presence would reject the valid value `false`.

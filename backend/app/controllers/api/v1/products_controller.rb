@@ -6,6 +6,7 @@ module Api
       # GET /api/v1/products?search=&active=&page=&per_page=
       def index
         products = Product
+                   .kept
                    .search_by_name(params[:search])
                    .by_state(params[:active])
                    .order(created_at: :desc, id: :desc)
@@ -44,14 +45,15 @@ module Api
 
       # DELETE /api/v1/products/:id
       def destroy
-        @product.destroy!
+        @product.discard # soft delete — retains the row with discarded_at set
         head :no_content
       end
 
       private
 
       def set_product
-        @product = Product.find(params[:id])
+        # kept-only: a soft-deleted product reads as gone (404).
+        @product = Product.kept.find(params[:id])
       end
 
       def product_params
