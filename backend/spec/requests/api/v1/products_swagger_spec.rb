@@ -81,6 +81,20 @@ RSpec.describe 'Products', type: :request, openapi_spec: 'v1/swagger.yaml' do
         schema type: :object, properties: { data: { '$ref' => '#/components/schemas/Product' } }
         run_test!
       end
+
+      response 404, 'not found' do
+        let(:id) { 999_999 }
+        let(:product) { { product: { name: 'X' } } }
+        schema '$ref' => '#/components/schemas/Error'
+        run_test!
+      end
+
+      response 422, 'validation error' do
+        let(:id) { create(:product).id }
+        let(:product) { { product: { price: '0' } } }
+        schema '$ref' => '#/components/schemas/Error'
+        run_test!
+      end
     end
 
     delete 'Deletes a product (soft delete)' do

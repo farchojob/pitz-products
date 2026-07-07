@@ -3,6 +3,8 @@ class Rack::Attack
   API_LIMIT = Integer(ENV.fetch("RACK_ATTACK_LIMIT", 100))
   API_PERIOD = Integer(ENV.fetch("RACK_ATTACK_PERIOD", 60)) # seconds
 
+  # Rack::Attack::Request#ip already resolves X-Forwarded-For (the client IP behind
+  # Render's proxy). (remote_ip is an ActionDispatch method — not available here.)
   throttle("api/ip", limit: API_LIMIT, period: API_PERIOD) do |request|
     request.ip if request.path.start_with?("/api/")
   end

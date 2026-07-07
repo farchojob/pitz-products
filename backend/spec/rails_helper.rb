@@ -37,3 +37,7 @@ Shoulda::Matchers.configure do |config|
     with.library :rails
   end
 end
+
+# Rate limiting is disabled in the test suite (the rate-limiting spec re-enables it
+# per-example), so a real cache store can never make unrelated request specs 429.
+Rack::Attack.enabled = false

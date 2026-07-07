@@ -4,10 +4,13 @@ RSpec.describe "Rate limiting", type: :request do
   # rack-attack uses Rails.cache (null store) in test by default, so give it a real
   # counter for these examples and restore it afterwards.
   around do |example|
-    original = Rack::Attack.cache.store
+    original_store = Rack::Attack.cache.store
+    original_enabled = Rack::Attack.enabled
     Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new
+    Rack::Attack.enabled = true
     example.run
-    Rack::Attack.cache.store = original
+    Rack::Attack.cache.store = original_store
+    Rack::Attack.enabled = original_enabled
   end
 
   it "throttles a client that exceeds the per-IP limit (429 with the error envelope)" do

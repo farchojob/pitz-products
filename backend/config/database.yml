@@ -24,6 +24,7 @@ test:
 # On a managed host, Rails automatically reads DATABASE_URL and merges it on top
 # of these values, so the explicit url below is belt-and-suspenders.
 production:
-  <<: *default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   url: <%= ENV["DATABASE_URL"] %>
-  database: <%= ENV.fetch("POSTGRES_DB", "pitz_products_production") %>

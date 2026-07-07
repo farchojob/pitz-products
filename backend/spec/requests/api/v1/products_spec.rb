@@ -142,7 +142,7 @@ RSpec.describe "Api::V1::Products", type: :request do
       expect(response).to have_http_status(:created)
       expect(response.headers["Location"]).to match(%r{/api/v1/products/\d+})
       expect(json["data"]["sku"]).to eq("NEW-9")
-      expect(json["data"]["price"]).to eq("12.5")
+      expect(json["data"]["price"]).to eq("12.50")
     end
 
     it "applies schema defaults when stock and active are omitted" do

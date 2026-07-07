@@ -6,6 +6,7 @@ class ProductBlueprint < Blueprinter::Base
   # Serialize price as a string to preserve decimal precision over JSON
   # (JS numbers are floats and silently lose cents on large/edge values).
   field :price do |product|
-    product.price.to_s
+    # Fixed 2-decimal string (12.50 stays "12.50", not "12.5") to preserve cents over JSON.
+    format("%.2f", product.price)
   end
 end
