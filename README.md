@@ -1,8 +1,10 @@
 # PITZ — Product Manager
 
+[![CI](https://github.com/farchojob/pitz-products/actions/workflows/ci.yml/badge.svg)](https://github.com/farchojob/pitz-products/actions/workflows/ci.yml)
+
 A full-stack **product management (CRUD)** application built for the PITZ technical challenge: a Ruby on Rails API and a React + TypeScript frontend, with search, filtering, pagination, validation on both ends, and a full test suite.
 
-> **🔗 Live demo:** **[pitz-products-web.onrender.com](https://pitz-products-web.onrender.com)** — API health at [`/up`](https://pitz-products-api.onrender.com/up).
+> **🔗 Live demo:** **[pitz-products-web.onrender.com](https://pitz-products-web.onrender.com)** — API health at [`/up`](https://pitz-products-api.onrender.com/up) · Swagger docs at [`/api-docs`](https://pitz-products-api.onrender.com/api-docs).
 > _Hosted on Render's free tier, so the first request after a period of inactivity can take ~30s to wake the service._
 
 ![Product list](docs/screenshots/product-list.jpeg)
@@ -66,6 +68,14 @@ npm run dev
 
 The frontend talks to `http://localhost:3000/api/v1` by default. Copy `.env.example` → `.env` in each app to override anything.
 
+### …or with Docker
+
+```bash
+docker compose up --build   # frontend → http://localhost:8080 · API → http://localhost:3000
+```
+
+Runs the whole stack (Postgres + API + static frontend) in development mode — no `RAILS_MASTER_KEY` required.
+
 ## Environment variables
 
 **Backend** (`backend/.env.example`) — for local Homebrew Postgres the defaults work with everything blank (socket connection).
@@ -94,7 +104,7 @@ cd frontend && npm run test:coverage    # with coverage
 
 ## API reference
 
-Base path: `/api/v1`. Envelope: successful reads/writes return `{ "data": ... }`; the list adds `{ "meta": ... }`; errors return `{ "error": { status, code, message, details } }`.
+Base path: `/api/v1`. Envelope: successful reads/writes return `{ "data": ... }`; the list adds `{ "meta": ... }`; errors return `{ "error": { status, code, message, details } }`. Interactive **Swagger UI** is served at [`/api-docs`](https://pitz-products-api.onrender.com/api-docs).
 
 | Method | Path | Description |
 |--------|------|-------------|
@@ -150,8 +160,12 @@ Base path: `/api/v1`. Envelope: successful reads/writes return `{ "data": ... }`
 
 ## Bonus features implemented
 
-- ✅ **React Query** for server state · ✅ **Frontend tests** (37, Vitest + RTL + MSW) · ✅ **Env-driven config**
-- ✅ **Render deploy** (`render.yaml` Blueprint: Postgres + API + static site)
+- ✅ **React Query** for server state · ✅ **Frontend tests** (39, Vitest + RTL + MSW) · ✅ **Env-driven config**
+- ✅ **CI** — GitHub Actions runs RuboCop + RSpec and TypeScript + lint + Vitest + build on every push
+- ✅ **Render deploy** (`render.yaml` Blueprint: Postgres + API + static site) · ✅ **Docker** (`docker compose up`)
+- ✅ **OpenAPI/Swagger** docs at `/api-docs` (rswag, generated from the request specs)
+- ✅ **Soft deletes** (`discard`) + **change auditing** (`audited`) + **rate limiting** (`rack-attack`)
+- ✅ **Optimistic delete** with rollback · ✅ **URL-synced filters** (shareable, survives refresh)
 - ✅ **VS Code full-stack debugger** (`.vscode/` — Rails `rdbg` + Chrome, one launcher)
 
 ## Deploy (Render)
@@ -160,10 +174,10 @@ Base path: `/api/v1`. Envelope: successful reads/writes return `{ "data": ... }`
 
 ## Future improvements
 
-- Soft deletes (`discard`) + change auditing (`audited`) — the model was designed with these in mind.
-- Swagger/OpenAPI docs (`rswag`) reusing the request specs.
-- CI (GitHub Actions) running both suites; Dockerized local stack (`docker-compose`).
-- Code-split the frontend bundle; URL-sync the list filters (page/search) for shareable links.
+- Authentication + actor attribution for the audit trail (audits record what/when, not who).
+- Error tracking and metrics (e.g. Sentry) plus structured request logging.
+- A page-size selector and column sorting on the list.
+- A keep-alive ping (or a paid tier) so the free Render service doesn't cold-start.
 
 ## FAQ
 
