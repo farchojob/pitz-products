@@ -38,6 +38,7 @@ afterEach(() => {
   cleanup()
   server.resetHandlers()
   resetDb()
+  window.history.replaceState(null, '', '/') // reset URL params between tests
 })
 
 afterAll(() => server.close())

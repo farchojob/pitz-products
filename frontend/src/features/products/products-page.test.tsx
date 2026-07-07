@@ -270,3 +270,28 @@ describe('ProductsPage — CRUD end-to-end', () => {
     expect(within(dialog).getByLabelText('SKU')).toHaveValue('')
   })
 })
+
+describe('ProductsPage — URL state', () => {
+  it('reflects the search term in the URL', async () => {
+    seedProducts([{ name: 'Alpha Widget' }])
+    const user = userEvent.setup()
+    renderWithClient(<ProductsPage />)
+    await screen.findByRole('table')
+
+    await user.type(screen.getByRole('textbox', { name: /search products by name/i }), 'alpha')
+    await waitFor(() => expect(window.location.search).toContain('search=alpha'))
+  })
+
+  it('initializes the filter from the URL on mount', async () => {
+    seedProducts([
+      { name: 'Active One', active: true },
+      { name: 'Inactive One', active: false },
+    ])
+    window.history.replaceState(null, '', '/?active=false')
+    renderWithClient(<ProductsPage />)
+
+    const t = await screen.findByRole('table')
+    expect(within(t).getByText('Inactive One')).toBeInTheDocument()
+    expect(within(t).queryByText('Active One')).not.toBeInTheDocument()
+  })
+})

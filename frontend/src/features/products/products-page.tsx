@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
 import { useProducts } from '@/hooks/use-products'
-import type { Product, StateFilter } from '@/types/product'
+import { useUrlListParams } from '@/hooks/use-url-list-params'
+import type { Product } from '@/types/product'
 import { DeleteProductDialog } from './delete-product-dialog'
 import { EmptyState, ErrorState, ListSkeleton } from './product-states'
 import { ProductCardList } from './product-card-list'
@@ -15,10 +16,9 @@ const PER_PAGE = 10
 const SEARCH_DEBOUNCE_MS = 400
 
 export function ProductsPage() {
-  const [page, setPage] = useState(1)
-  const [searchInput, setSearchInput] = useState('')
-  const [active, setActive] = useState<StateFilter>('all')
-  const debouncedSearch = useDebouncedValue(searchInput, SEARCH_DEBOUNCE_MS)
+  // page / search / status live in the URL (shareable + survives refresh).
+  const { page, search, active, setPage, setSearch, setActive, reset } = useUrlListParams()
+  const debouncedSearch = useDebouncedValue(search, SEARCH_DEBOUNCE_MS)
 
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Product | null>(null)
@@ -30,22 +30,6 @@ export function ProductsPage() {
     search: debouncedSearch,
     active,
   })
-
-  const handleSearch = (value: string) => {
-    setSearchInput(value)
-    setPage(1)
-  }
-
-  const handleFilter = (value: StateFilter) => {
-    setActive(value)
-    setPage(1)
-  }
-
-  const clearFilters = () => {
-    setSearchInput('')
-    setActive('all')
-    setPage(1)
-  }
 
   const openCreate = () => {
     setEditing(null)
@@ -62,10 +46,10 @@ export function ProductsPage() {
   return (
     <div className="space-y-4">
       <ProductToolbar
-        search={searchInput}
-        onSearchChange={handleSearch}
+        search={search}
+        onSearchChange={setSearch}
         active={active}
-        onActiveChange={handleFilter}
+        onActiveChange={setActive}
         onNew={openCreate}
         isFetching={isFetching}
       />
@@ -75,7 +59,7 @@ export function ProductsPage() {
       ) : isError ? (
         <ErrorState message={error.message} onRetry={() => void refetch()} />
       ) : data.data.length === 0 ? (
-        <EmptyState hasFilters={hasFilters} onClear={clearFilters} onNew={openCreate} />
+        <EmptyState hasFilters={hasFilters} onClear={reset} onNew={openCreate} />
       ) : (
         <>
           <ProductTable products={data.data} onEdit={openEdit} onDelete={setDeleting} />
