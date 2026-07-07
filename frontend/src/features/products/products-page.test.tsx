@@ -244,9 +244,10 @@ describe('ProductsPage — CRUD end-to-end', () => {
     await user.click(within(await screen.findByRole('alertdialog')).getByRole('button', { name: /^delete$/i }))
 
     await waitFor(() => expect(toast.error).toHaveBeenCalled())
-    // The dialog stays open on failure (aria-hides the table), and the row is untouched.
-    expect(screen.getByRole('alertdialog')).toBeInTheDocument()
-    expect(screen.getAllByText('Alpha Widget').length).toBeGreaterThan(0)
+    // Optimistic delete: the dialog closed and the row was removed, but the failure
+    // rolls the row back into the list.
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    await waitFor(() => expect(within(table()).getByText('Alpha Widget')).toBeInTheDocument())
   })
 
   it('resets the form to empty when reopening for create after an edit', async () => {

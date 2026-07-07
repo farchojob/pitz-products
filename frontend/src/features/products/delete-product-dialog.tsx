@@ -24,9 +24,10 @@ export function DeleteProductDialog({ product, onOpenChange }: Props) {
   const handleConfirm = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     if (!product) return
-    deleteProduct.mutate(product, {
-      onSuccess: () => onOpenChange(false),
-    })
+    // Optimistic: fire the delete and close immediately — the row is already gone.
+    // A failure rolls it back and shows an error toast (see useDeleteProduct).
+    deleteProduct.mutate(product)
+    onOpenChange(false)
   }
 
   return (
