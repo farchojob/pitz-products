@@ -7,11 +7,11 @@ A full-stack **product management (CRUD)** application built for the PITZ techni
 > **🔗 Live demo:** **[pitz-products-web.onrender.com](https://pitz-products-web.onrender.com)** — API health at [`/up`](https://pitz-products-api.onrender.com/up) · Swagger docs at [`/api-docs`](https://pitz-products-api.onrender.com/api-docs).
 > _Hosted on Render's free tier, so the first request after a period of inactivity can take ~30s to wake the service._
 
-![Pitz Products — table view, dark](docs/screenshots/product-list.png)
+![Pitz Products — catalog grid, dark](docs/screenshots/product-list.png)
 
-> Table ⇄ card-grid views, light + dark themes on the Pitz brand palette (red on navy). Design rationale + tokens: **[design system handoff](docs/DESIGN.md)**.
+> Product imagery (uploaded to a local folder), catalog metrics, a tick-meter stock indicator, a quick-view modal, table ⇄ card-grid views, and light/dark themes on the Pitz brand palette (red on navy). Design tokens + rationale: **[design system](docs/DESIGN.md)**.
 
-![Pitz Products — card-grid view, dark](docs/screenshots/product-grid.png)
+![Pitz Products — quick-view modal, dark](docs/screenshots/product-quickview.png)
 
 ---
 
@@ -161,10 +161,11 @@ Base path: `/api/v1`. Envelope: successful reads/writes return `{ "data": ... }`
 - **Consistent error envelope.** A single `rescue_from` ladder maps every failure (404 / 422 / 500) to `{ error: { status, code, message, details } }`, so the frontend maps field errors uniformly. The 500 handler never leaks a backtrace.
 - **Data integrity in depth.** App-level validations are backed by DB constraints: a functional unique index on `LOWER(sku)` (race-safe), `pg_trgm` GIN index for `ILIKE` search, and `price > 0` / `stock >= 0` check constraints.
 - **A multi-agent adversarial review** of the generated backend caught and fixed 7 real issues before tests were written (garbage filter values silently filtering to active-only, a deep-offset pagination DoS, a 500 on oversized prices, CORS failing open, unstable ordering) — see the git history.
+- **Local image storage (v1).** Uploads are written to `backend/public/uploads/` (validated: JPG/PNG/WEBP, ≤5 MB, generated filename) and served statically; `image_url` stores the `/uploads/…` path. Dependency-free for the demo — the trade-off is that runtime uploads are ephemeral on Render's free tier (committed seed images persist). Production would swap a cloud object store (S3 / ActiveStorage) behind the same `image_url` field.
 
 ## Bonus features implemented
 
-- ✅ **React Query** for server state · ✅ **Frontend tests** (41, Vitest + RTL + MSW) · ✅ **Env-driven config**
+- ✅ **React Query** for server state · ✅ **Frontend tests** (45, Vitest + RTL + MSW) · ✅ **Env-driven config**
 - ✅ **CI** — GitHub Actions runs RuboCop + RSpec and TypeScript + lint + Vitest + build on every push
 - ✅ **Render deploy** (`render.yaml` Blueprint: Postgres + API + static site) · ✅ **Docker** (`docker compose up`)
 - ✅ **OpenAPI/Swagger** docs at `/api-docs` (rswag, generated from the request specs)
@@ -172,6 +173,7 @@ Base path: `/api/v1`. Envelope: successful reads/writes return `{ "data": ... }`
 - ✅ **Optimistic delete** with rollback · ✅ **URL-synced filters** (shareable, survives refresh)
 - ✅ **VS Code full-stack debugger** (`.vscode/` — Rails `rdbg` + Chrome, one launcher)
 - ✅ **Pitz-branded design system** — red-on-navy, light + dark themes ([handoff](docs/DESIGN.md)) · ✅ **Table ⇄ card-grid views** (remembered per user)
+- ✅ **Product images** — browse/drag-drop upload to a local folder (`POST /uploads`, validated) + a no-media fallback everywhere · ✅ **Catalog metrics** (`/products/stats`) · ✅ **Quick-view modal** + tick-meter stock health
 
 ## Deploy (Render)
 
