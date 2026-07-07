@@ -113,10 +113,12 @@ Base path: `/api/v1`. Envelope: successful reads/writes return `{ "data": ... }`
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/products` | List (paginated). Query: `page`, `per_page` (default 10, max 100), `search` (by name), `active` (`true`/`false`) |
+| GET | `/products/stats` | Whole-catalog KPIs: `total`, `active`, `out`, `low`, `inventory_value` |
 | GET | `/products/:id` | Fetch one |
 | POST | `/products` | Create |
 | PUT / PATCH | `/products/:id` | Update |
-| DELETE | `/products/:id` | Delete |
+| DELETE | `/products/:id` | Delete (soft) |
+| POST | `/uploads` | Upload a product image (multipart `file`; JPG/PNG/WEBP ≤ 5 MB) → `{ data: { url } }` |
 
 <details>
 <summary>Sample list response</summary>
@@ -125,7 +127,7 @@ Base path: `/api/v1`. Envelope: successful reads/writes return `{ "data": ... }`
 {
   "data": [
     { "id": 1, "name": "Premium Widget", "description": "…", "price": "19.99",
-      "stock": 42, "sku": "SKU-0001", "active": true,
+      "stock": 42, "sku": "SKU-0001", "active": true, "image_url": "/uploads/seed/1.jpg",
       "created_at": "2026-07-06T…Z", "updated_at": "2026-07-06T…Z" }
   ],
   "meta": { "total": 55, "page": 1, "pages": 6, "per_page": 10, "next": 2, "prev": null }
@@ -152,6 +154,7 @@ Base path: `/api/v1`. Envelope: successful reads/writes return `{ "data": ... }`
 | `stock` | required, integer `≥ 0` |
 | `sku` | required, **unique** (case-insensitive), regex `^(?=.*[A-Z0-9])[A-Z0-9-]+$` |
 | `active` | boolean, default `true` |
+| `image_url` | optional, a `/uploads/…` path or http(s) URL, ≤ 512 chars |
 
 ## Technical decisions
 
