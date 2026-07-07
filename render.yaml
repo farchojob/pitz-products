@@ -6,7 +6,8 @@
 #   2. If Render appends a suffix to a service name (because the name is taken), update
 #      FRONTEND_ORIGIN and VITE_API_URL below so the two public URLs match, then redeploy.
 #
-# Free plans spin down when idle and the managed Postgres is time-limited — fine for a demo.
+# The API runs on Starter (always-on). The managed Postgres is on the free plan
+# (time-limited) — fine for a demo; move it to a paid/managed DB for anything longer.
 
 databases:
   - name: pitz-products-db
@@ -20,11 +21,11 @@ services:
   - name: pitz-products-api
     type: web
     runtime: ruby
-    plan: free
+    plan: starter # always-on (no cold start); Free spins down after inactivity
     rootDir: backend
     buildCommand: bundle install
-    # Free tier doesn't support preDeployCommand. db:prepare migrates on boot; db:seed is
-    # idempotent (find_or_create + conditional image backfill) and safe to run each deploy —
+    # Migrate + seed on boot (kept in startCommand for simplicity). db:seed is idempotent
+    # (find_or_create + a conditional image backfill), so it's safe to run on every deploy —
     # it backfills product imagery onto rows created before image_url existed.
     startCommand: bundle exec rails db:prepare && bundle exec rails db:seed && bundle exec rails server
     healthCheckPath: /up
