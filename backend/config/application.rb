@@ -44,5 +44,8 @@ module Backend
     # Log and drop unknown request params rather than raising, so the API tolerates
     # clients that send extra fields; strong params still filter them from writes.
     config.action_controller.action_on_unpermitted_parameters = :log
+
+    # Rate limiting for the public, unauthenticated API (rules in config/initializers/rack_attack.rb).
+    config.middleware.use Rack::Attack
   end
 end
