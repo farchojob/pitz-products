@@ -37,8 +37,8 @@ jobs:
           ruby-version: "3.3"
           working-directory: backend
           bundler-cache: true
-      - name: Prepare database
-        run: bundle exec rails db:prepare
+      - name: Prepare test database (schema only, no seeds)
+        run: bundle exec rails db:test:prepare
       - name: RuboCop
         run: bundle exec rubocop
       - name: RSpec
