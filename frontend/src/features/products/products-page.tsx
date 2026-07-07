@@ -1,15 +1,21 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
 import { useProducts } from '@/hooks/use-products'
 import { useUrlListParams } from '@/hooks/use-url-list-params'
 import type { Product } from '@/types/product'
-import { DeleteProductDialog } from './delete-product-dialog'
 import { EmptyState, ErrorState, ListSkeleton } from './product-states'
 import { ProductCardList } from './product-card-list'
-import { ProductFormDialog } from './product-form-dialog'
 import { ProductPagination } from './product-pagination'
 import { ProductTable } from './product-table'
 import { ProductToolbar } from './product-toolbar'
+
+// Dialogs are code-split — their chunk loads the first time a user opens one.
+const ProductFormDialog = lazy(() =>
+  import('./product-form-dialog').then((module) => ({ default: module.ProductFormDialog })),
+)
+const DeleteProductDialog = lazy(() =>
+  import('./delete-product-dialog').then((module) => ({ default: module.DeleteProductDialog })),
+)
 
 const PER_PAGE = 10
 // Wait for a deliberate pause in typing before querying, so a request doesn't fire mid-word.
@@ -68,13 +74,17 @@ export function ProductsPage() {
         </>
       )}
 
-      <ProductFormDialog open={formOpen} onOpenChange={setFormOpen} product={editing} />
-      <DeleteProductDialog
-        product={deleting}
-        onOpenChange={(nextOpen) => {
-          if (!nextOpen) setDeleting(null)
-        }}
-      />
+      <Suspense fallback={null}>
+        {formOpen && <ProductFormDialog open={formOpen} onOpenChange={setFormOpen} product={editing} />}
+        {deleting && (
+          <DeleteProductDialog
+            product={deleting}
+            onOpenChange={(nextOpen) => {
+              if (!nextOpen) setDeleting(null)
+            }}
+          />
+        )}
+      </Suspense>
     </div>
   )
 }
