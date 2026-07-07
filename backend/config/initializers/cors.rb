@@ -3,7 +3,10 @@
 # Allow the React frontend to call the API from a different origin.
 # FRONTEND_ORIGIN is a comma-separated allowlist
 # (e.g. "http://localhost:5173,https://app.example.com").
-allowed_origins = ENV.fetch("FRONTEND_ORIGIN", "http://localhost:5173")
+# In production there is no localhost default — FRONTEND_ORIGIN must be set explicitly
+# so the API never silently allows an unintended origin.
+default_origin = Rails.env.production? ? "" : "http://localhost:5173"
+allowed_origins = ENV.fetch("FRONTEND_ORIGIN", default_origin)
                      .split(",").map(&:strip).reject(&:blank?)
 
 # Fail closed rather than silently allowing the localhost default in production,

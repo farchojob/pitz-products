@@ -1,0 +1,60 @@
+# Render Blueprint — one-click full-stack deploy (Postgres + Rails API + React static site).
+#
+# In Render: New + → Blueprint → connect this repository. Then:
+#   1. Set the RAILS_MASTER_KEY secret on the "pitz-products-api" service to the contents
+#      of backend/config/master.key (it is gitignored and never committed).
+#   2. If Render appends a suffix to a service name (because the name is taken), update
+#      FRONTEND_ORIGIN and VITE_API_URL below so the two public URLs match, then redeploy.
+#
+# Free plans spin down when idle and the managed Postgres is time-limited — fine for a demo.
+
+databases:
+  - name: pitz-products-db
+    databaseName: pitz_products
+    plan: free
+
+services:
+  # ---------------------------------------------------------------------------
+  # Rails API (Ruby web service)
+  # ---------------------------------------------------------------------------
+  - name: pitz-products-api
+    type: web
+    runtime: ruby
+    plan: free
+    rootDir: backend
+    buildCommand: bundle install
+    preDeployCommand: bundle exec rails db:prepare && bundle exec rails db:seed
+    startCommand: bundle exec rails server
+    healthCheckPath: /up
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_LOG_TO_STDOUT
+        value: "true"
+      - key: RAILS_MASTER_KEY
+        sync: false # paste the contents of backend/config/master.key in the dashboard
+      - key: DATABASE_URL
+        fromDatabase:
+          name: pitz-products-db
+          property: connectionString
+      - key: FRONTEND_ORIGIN
+        value: https://pitz-products-web.onrender.com
+
+  # ---------------------------------------------------------------------------
+  # React frontend (static site)
+  # ---------------------------------------------------------------------------
+  - name: pitz-products-web
+    type: web
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: VITE_API_URL
+        value: https://pitz-products-api.onrender.com/api/v1
